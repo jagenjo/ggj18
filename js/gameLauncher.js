@@ -1,5 +1,6 @@
 var GAMES = {
 
+	games: [],
 	gameClasses: {},
 	current_game: null,
 	
@@ -11,7 +12,6 @@ var GAMES = {
 			var game = this.gameClasses[i];
 			game.init();
 		}
-		
 	},
 	
 	registerGame: function( game )
@@ -19,11 +19,13 @@ var GAMES = {
 		if(!game.name)
 			throw("game without name");
 		this.gameClasses[ game.name ] = game;
+		this.games.push( game );
 	},
 	
-	launchGame: function( name )
+	launchGame: function( game )
 	{
-		var game = this.gameClasses[ name ];
+		if( game && game.constructor === String )
+			game = this.gameClasses[ game ];
 		if(!game)
 			throw("game not found: " + name );
 		
@@ -34,6 +36,9 @@ var GAMES = {
 		}
 			
 		this.current_game = game;
-		game.start();
+		PLAYSTAGE.game = game;
+		game.start_time = getTime();
+		if(game.onStart)
+			game.onStart();
 	}
 };

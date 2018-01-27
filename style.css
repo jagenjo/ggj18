@@ -12,10 +12,10 @@ html, body {
 
 #main {
 	width: 640px;
-	height: 468px;
+	height: 480px;
 	margin: auto;
 	background-color: black;
-	border: 1px solid white;
+	outline: 1px solid white;
 	
   position: absolute;
   top: 50%; left: 50%;

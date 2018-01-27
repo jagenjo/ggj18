@@ -11,9 +11,12 @@ var APP = {
 	init: function()
 	{
 		this.canvas = document.querySelector("canvas");
-		this.canvas.addEventListener("mousedown", this.onMouse.bind(this) );
-		this.canvas.addEventListener("mousemove", this.onMouse.bind(this) );
-		this.canvas.addEventListener("mouseup", this.onMouse.bind(this) );
+		
+		this.loop = new GameLoop( this.canvas );
+		this.loop.ondraw = this.render.bind(this);
+		this.loop.onupdate = this.update.bind(this);
+		this.loop.onmouse = this.onMouse.bind(this);
+		this.loop.onkey = this.onKey.bind(this);
 		
 		for(var i in this.stages)
 		{
@@ -24,28 +27,9 @@ var APP = {
 		
 		this.changeStage( LOADSTAGE );
 		
-		this.start();
+		this.loop.start();
 	},
-	
-	start: function()
-	{
-		var that = this;
-		var start_time = getTime();
-		var prev = start_time;
-		loop();
 		
-		function loop()
-		{
-			var now = getTime();
-			that.time = now - start_time;
-			var dt = now - prev;
-			prev = now;
-			requestAnimationFrame( loop );
-			that.render();
-			that.update( dt );
-		}
-	},
-	
 	render: function()
 	{
 		var canvas = this.canvas;
@@ -65,9 +49,16 @@ var APP = {
 	
 	onMouse: function(e)
 	{
+		
 		//to local canvas coordinates
 		if( this.current_stage.onMouse )
 			this.current_stage.onMouse(e);
+	},
+	
+	onKey: function(e)
+	{
+		if( this.current_stage.onKey )
+			this.current_stage.onKey(e);
 	},
 	
 	registerStage: function( stage )

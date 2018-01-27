@@ -8,7 +8,8 @@ var GameExample = {
 	//ALL GAME STATE SHOULD BE HERE, DO NOT STORE WEIRD STUFF LIKE IMAGES, DOM, ETC
 	//GAME STATE IS SENT TO SERVER EVERY FRAME so keep it light
 	state: {
-		time: 0
+		time: 0, //time since game started
+		blips: [],
 	},
 
 	//called after loading all games, init stuff here
@@ -28,6 +29,16 @@ var GameExample = {
 	//render one frame, DO NOT MODIFY STATE
 	onRender: function( canvas )
 	{
+		var ctx = canvas.getContext("2d");
+		ctx.fillStyle = "black";
+		ctx.fillRect( 0,0, canvas.width, canvas.height );
+		ctx.strokeStyle = "cyan";
+		for(var i = 0; i < this.state.blips.length; ++i)
+		{
+			var blip = 	this.state.blips[i];
+			ctx.circle( blip.x, blip.y, (this.state.time - blip.time) * 10 );
+			ctx.stroke();
+		}
 	},
 
 	//update game state	
@@ -36,8 +47,10 @@ var GameExample = {
 	{
 	},
 	
-	onClick: function( e )
+	onMouse: function( e )
 	{
+		if(e.type == "mousedown" )
+			this.state.blips.push( { x: e.posx, y: e.posy, time: this.state.time } );
 	},
 	
 	//called when moving to other game
