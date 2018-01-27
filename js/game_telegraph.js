@@ -6,6 +6,14 @@ var GameTelegraph = {
 	scale: 2,
 	to_load: ["data/telegraph/sprite_1.png", "data/telegraph/sprite_2.png", "data/telegraph/sprite_3.png"], //urls of images and sounds to load
 	
+	morseCodes: [
+		"--. .- -- .",
+		".--- .- --",
+		"-... -.-. -.",
+		"--. -... .---",
+		"...- --. .-",
+	],
+
 	//ALL GAME STATE SHOULD BE HERE, DO NOT STORE WEIRD STUFF LIKE IMAGES, DOM, ETC
 	//GAME STATE IS SENT TO SERVER EVERY FRAME so keep it light
 	state: {
@@ -17,7 +25,7 @@ var GameTelegraph = {
 		mousebutton_was_pressed: false,	//not used
 		mousebutton_was_released: false,
 		mousePressCooldown: 0,
-		morse: "--. .- -- .",
+		morse: "",
 		morseProgress: 0,
 		state: 0,
 		volume: 0,
@@ -31,11 +39,6 @@ var GameTelegraph = {
 		this.audio.src = "data/telegraph/beep.mp3";
 		this.audio.loop = true;
 		this.audio.volume = this.state.volume;
-		this.audioWin = new Audio();
-		this.audioWin.autoplay = false;
-		this.audioWin.loop = false;
-		this.audioWin.src = "data/win1.wav";
-		this.audioWin.volume = 0.5;
 	},
 
 	onEnter: function()
@@ -55,6 +58,7 @@ var GameTelegraph = {
 	{
 		//reset game state
 		this.state.time = 0;
+		this.state.morse = this.morseCodes[Math.floor(Math.random() * this.morseCodes.length)];
 	},
 
 	drawMorse: function( ctx, code, x, y )
@@ -162,7 +166,6 @@ var GameTelegraph = {
 	win: function()
 	{
 		this.state.state = 2;
-		this.audioWin.play();
 		GAMES.playSound("data/win1.wav", 0.5);
 	},
 	
