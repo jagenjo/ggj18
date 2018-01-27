@@ -13,6 +13,7 @@ var GameExample = {
 		mousedown: false,
 		mousedown_was_pressed: false,
 		blips: [],
+		volume: 0.0
 	},
 
 	//called after loading all games, init stuff here
@@ -23,8 +24,20 @@ var GameExample = {
 		this.audio.loop = true;
 		this.audio.autoplay = false;
 		this.audio.volume = 0.0;
+	},
+	
+	//when starting to show this game
+	onEnter: function()
+	{
 		this.audio.play();
 	},
+	
+	//when ending showing this game
+	onLeave: function()
+	{
+		this.audio.pause();
+	},
+	
 	
 	//called when the game starts
 	//game_info contains difficulty_level:[0 easy, 5 hard]
@@ -33,6 +46,7 @@ var GameExample = {
 	{
 		//reset game state
 		this.state.time = 0;
+		this.state.blips.length = 0;
 	},
 	
 	//render one frame, DO NOT MODIFY STATE
@@ -45,16 +59,19 @@ var GameExample = {
 		for(var i = 0; i < this.state.blips.length; ++i)
 		{
 			var blip = 	this.state.blips[i];
+			ctx.globalAlpha = Math.max(0, 1.0 - (this.state.time - blip.time) * 0.5 );
 			ctx.circle( blip.x, blip.y, (this.state.time - blip.time) * 10 );
 			ctx.stroke();
 		}
+		ctx.globalAlpha = 1;
 	},
 
 	//update game state	
 	//ONLY USE INPUT_STATE TO COMPUTE NEW GAME_STATE
 	onUpdate: function( dt )
 	{
-		this.audio.volume = Math.max( 0, this.audio.volume - dt );
+		this.state.volume = Math.max( 0, this.state.volume - dt );
+		this.audio.volume = this.state.volume;
 	},
 	
 	onMouse: function( e )
@@ -62,12 +79,11 @@ var GameExample = {
 		if(e.type == "mousedown" )
 		{
 			this.state.blips.push( { x: e.posx, y: e.posy, time: this.state.time } );
-			this.audio.volume = 0.5;
+			GAMES.playSound("data/sounds/water.wav",0.5);
 		}
 	},
 	
 	//called when moving to other game
-	//use to stop sounds or timers
 	onFinish: function()
 	{
 	}

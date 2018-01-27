@@ -15,16 +15,20 @@ var PLAYSTAGE = {
 	
 	onInit: function()
 	{
-		this.game_canvas = document.createElement("canvas");
-		this.game_canvas.width = this.screen.width;
-		this.game_canvas.height = this.screen.height;
 	},
 
 	onEnter: function()
 	{
 		this.screen.scale = this.game.scale || 2;
-		this.game_canvas.width = this.screen.width / this.screen.scale;
-		this.game_canvas.height = this.screen.height / this.screen.scale;
+		
+		if(this.game && this.game.onEnter)
+			this.game.onEnter();
+	},
+	
+	onLeave: function()
+	{
+		if(this.game && this.game.onLeave)
+			this.game.onLeave();
 	},
 	
 	onRender: function( canvas )
@@ -35,11 +39,12 @@ var PLAYSTAGE = {
 
 		ctx.drawImage( APP.assets["data/fondo.png"],0,0);
 		
-		if( this.game.onRender )
-			this.game.onRender( this.game_canvas );
-
-		ctx.imageSmoothingEnabled = false;
-		ctx.drawImage( this.game_canvas, this.screen.x, this.screen.y, this.screen.width, this.screen.height );
+		var game_canvas = GAMES.renderGame( this.game, this.screen );
+		if( game_canvas )
+		{
+			ctx.imageSmoothingEnabled = false;
+			ctx.drawImage( game_canvas, this.screen.x, this.screen.y, this.screen.width, this.screen.height );
+		}
 
 		ctx.fillStyle = "white";
 		ctx.font = "8px pixel";
@@ -53,6 +58,7 @@ var PLAYSTAGE = {
 		if( this.game.onUpdate )
 			this.game.onUpdate(dt);
 		this.game.state.mousebutton_was_pressed = false;
+		NETWORK.sendGameState( this.game );
 	},
 	
 	onMouse: function(e)
