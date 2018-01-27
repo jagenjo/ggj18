@@ -14,16 +14,33 @@ var GameTelegraph = {
 		mousedown: false,
 		mousedown_when: 0,
 		mouseup_when: 0,
-		mousebutton_was_pressed: false,	//updated outside
+		mousebutton_was_pressed: false,	//not used
 		mousebutton_was_released: false,
 		mousePressCooldown: 0,
 		morse: "--. .- -- .",
 		morseProgress: 0,
+		win: false,
+		fail: false,
 	},
 
 	//called after loading all games, init stuff here
 	onInit: function()
 	{
+		this.audio = new Audio();
+		this.audio.autoplay = false;
+		this.audio.src = "data/telegraph/beep.mp3";
+		this.audio.loop = true;
+		this.audio.volume = 0;
+	},
+
+	onEnter: function()
+	{
+		this.audio.play();
+	},
+
+	onLeave: function()
+	{
+		this.audio.pause();
 	},
 	
 	//called when the game starts
@@ -33,12 +50,6 @@ var GameTelegraph = {
 	{
 		//reset game state
 		this.state.time = 0;
-		this.audio = new Audio();
-		this.audio.autoplay = false;
-		this.audio.src = "data/telegraph/beep.mp3";
-		this.audio.loop = true;
-		this.audio.volume = 0;
-		this.audio.play();
 	},
 
 	drawMorse: function( ctx, code, x, y )
@@ -47,7 +58,7 @@ var GameTelegraph = {
 		for(var i in code){
 			var c = code[i];
 			if(i == this.state.morseProgress){
-				ctx.strokeStyle = "red";
+				ctx.strokeStyle = "yellow";
 				ctx.beginPath();
 				ctx.moveTo(ax, y-6);
 				ctx.lineTo(ax, y+2);
@@ -79,6 +90,8 @@ var GameTelegraph = {
 		ctx.font = "8px pixel";
 		ctx.fillText("Send:", 10, 20);
 
+		if(this.state.win) ctx.fillStyle = "green";
+		else if(this.state.fail) ctx.fillStyle = "red";
 		this.drawMorse(ctx, this.state.morse, 50, 20);
 	},
 
@@ -87,16 +100,20 @@ var GameTelegraph = {
 		var m;
 		if(this.state.mousebutton_was_released){
 			var t = this.state.time - this.state.mousedown_when;
-			if(t < 0.5) m = ".";
+			if(t < 0.3) m = ".";
 			else m = "-";
-		}else if(this.state.mousebutton_was_pressed){
-			var t = this.state.time - this.state.mouseup_when;
-			if(t > 0.5) m = " ";
+
+			if(m == this.state.morse[this.state.morseProgress]) this.state.morseProgress += 1;
+			else {
+				this.state.morseProgress = 0;
+				this.state.fail = true;
+			}
+		}else if(this.state.time - this.state.mouseup_when > 0.3){
+			if(" " == this.state.morse[this.state.morseProgress]) this.state.morseProgress += 1;
 		}
 
-		if(m == this.state.morse[this.state.morseProgress]) this.state.morseProgress += 1;
-
-		if(m == "." || m == "-" || m == " ") console.log(t, m);
+		if(this.state.morseProgress >= this.state.morse.length) this.state.win = true;
+		
 	},
 
 	//update game state	
@@ -126,6 +143,7 @@ var GameTelegraph = {
 	onMouse: function( e )
 	{
 		if(e.type == "mousedown"){
+			this.state.fail = false;
 			this.state.mousedown_when = this.state.time;
 			this.state.mousePressCooldown = 0.1 - (this.state.mousePressCooldown > 0 ? this.state.mousePressCooldown : 0);
 		}else if(e.type == "mouseup"){
