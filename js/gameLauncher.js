@@ -40,5 +40,21 @@ var GAMES = {
 		game.start_time = getTime();
 		if(game.onStart)
 			game.onStart();
+	},
+	
+	saveGameState: function()
+	{
+		localStorage.setItem( "game_state", JSON.stringify( this.current_game.state ) );
+	},
+	
+	loadGameState: function()
+	{
+		var state = localStorage.getItem( "game_state" );
+		if(!state)
+			return;
+		var state = JSON.parse( state );
+		this.current_game.start_time = getTime() - state.time * 1000;
+		this.current_game.state = state;
 	}
+	
 };

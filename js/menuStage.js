@@ -59,13 +59,16 @@ var MENUSTAGE = {
 	
 	onKey: function( e )
 	{
-		if(e.keyCode == 38 )
-			this.selected--;
-		if(e.keyCode == 40 )
-			this.selected++;
-		if(e.keyCode == 13 )
-			this.selectGame( GAMES.games[ this.selected ] );
-		this.selected = Math.clamp( this.selected, 0, GAMES.games.length - 1 );
+		if( e.type == "keydown" )
+		{
+			if(e.keyCode == 38 )
+				this.selected--;
+			if(e.keyCode == 40 )
+				this.selected++;
+			if(e.keyCode == 13 )
+				this.selectGame( GAMES.games[ this.selected ] );
+			this.selected = Math.clamp( this.selected, 0, GAMES.games.length - 1 );
+		}
 	}
 };
 

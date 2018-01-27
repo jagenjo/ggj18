@@ -1,9 +1,7 @@
-//API CALLS
-//GAME.finish(score) //to finish
 
-var GameExample = {
-	name: "test",
-	scale: 5,
+var GameOutrun = {
+	name: "outrun",
+	scale: 1,
 	to_load: [], //urls of images and sounds to load
 	
 	//ALL GAME STATE SHOULD BE HERE, DO NOT STORE WEIRD STUFF LIKE IMAGES, DOM, ETC
@@ -46,7 +44,7 @@ var GameExample = {
 
 	//update game state	
 	//ONLY USE INPUT_STATE TO COMPUTE NEW GAME_STATE
-	onUpdate: function( dt )
+	onUpdate: function( input_state )
 	{
 	},
 	
@@ -64,5 +62,5 @@ var GameExample = {
 };
 
 //register in DB
-GAMES.registerGame( GameExample );
+GAMES.registerGame( GameOutrun );
 

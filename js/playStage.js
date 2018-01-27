@@ -82,8 +82,16 @@ var PLAYSTAGE = {
 	
 	onKey: function(e)
 	{
-		if( e.keyCode == 27 )
-			APP.changeStage( MENUSTAGE );
+		if ( e.type == "keydown")
+		{
+			switch( e.keyCode )
+			{
+				case 27: APP.changeStage( MENUSTAGE ); return; break;
+				case 90: GAMES.saveGameState(); return; break;
+				case 88: GAMES.loadGameState(); return; break;
+				default:
+			}
+		}		
 		else
 		{
 			if( this.game.onKey )

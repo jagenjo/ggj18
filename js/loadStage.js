@@ -77,6 +77,14 @@ var LOADSTAGE = {
 				img.onload = inner_load;
 				APP.assets[ filename ] = img;
 			}
+			else if( ext == "wav" || ext == "mp3" )
+			{
+				var audio = new Audio();
+				audio.src = filename;
+				audio.autoplay = false;
+				audio.onload = inner_load;
+				APP.assets[ filename ] = audio;
+			}
 			else
 				throw("unknown file to load");
 		}

@@ -10,9 +10,10 @@ var APP = {
 
 	init: function()
 	{
+		NETWORK.init();
+	
 		var main = this.main = document.querySelector("#main");
 		var canvas = this.canvas = document.querySelector("canvas");
-		
 		onResize();
 		
 		this.loop = new GameLoop( this.canvas );
