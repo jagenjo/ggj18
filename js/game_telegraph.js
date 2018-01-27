@@ -163,6 +163,7 @@ var GameTelegraph = {
 	{
 		this.state.state = 2;
 		this.audioWin.play();
+		GAMES.playSound("data/win1.wav", 0.5);
 	},
 	
 	//called when moving to other game
