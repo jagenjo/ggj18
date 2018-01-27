@@ -13,6 +13,7 @@ var GameExample = {
 		mousedown: false,
 		mousedown_was_pressed: false,
 		blips: [],
+		volume: 0.0
 	},
 
 	//called after loading all games, init stuff here
@@ -45,6 +46,7 @@ var GameExample = {
 	{
 		//reset game state
 		this.state.time = 0;
+		this.state.blips.length = 0;
 	},
 	
 	//render one frame, DO NOT MODIFY STATE
@@ -68,7 +70,8 @@ var GameExample = {
 	//ONLY USE INPUT_STATE TO COMPUTE NEW GAME_STATE
 	onUpdate: function( dt )
 	{
-		this.audio.volume = Math.max( 0, this.audio.volume - dt );
+		this.state.volume = Math.max( 0, this.state.volume - dt );
+		this.audio.volume = this.state.volume;
 	},
 	
 	onMouse: function( e )
@@ -76,7 +79,7 @@ var GameExample = {
 		if(e.type == "mousedown" )
 		{
 			this.state.blips.push( { x: e.posx, y: e.posy, time: this.state.time } );
-			this.audio.volume = 0.5;
+			GAMES.playSound("data/sounds/water.wav",0.5);
 		}
 	},
 	

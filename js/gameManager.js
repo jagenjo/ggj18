@@ -74,6 +74,21 @@ var GAMES = {
 		this.current_game.state = state;
 	},
 	
-	
-	
+	playSound: function( filename, volume, skip_send, force_play )
+	{
+		//play local only if you are playing or comes from the server (no if you are spectating)
+		if( PLAYSTAGE.active || force_play )
+		{
+			volume = volume || 0.5;
+			var audio = new Audio();
+			audio.src = filename;
+			audio.loop = false;
+			audio.volume = volume;
+			audio.play();
+		}
+		
+		//play in spectators
+		if( !skip_send )
+			NETWORK.sendEvent( { type:"game_event", action: "play_sound", filename: filename, volume: volume } );
+	}
 };

@@ -21,7 +21,14 @@ var SPECTATORSTAGE = {
 
 	onEnter: function()
 	{
-		
+		if(this.game && this.game.onEnter)
+			this.game.onEnter();
+	},
+	
+	onLeave: function()
+	{
+		if(this.game && this.game.onLeave)
+			this.game.onLeave();
 	},
 	
 	onRender: function( canvas )
@@ -72,11 +79,37 @@ var SPECTATORSTAGE = {
 		if( this.spectating_author != author_id )
 			return;
 			
-		this.game = GAMES.gameClasses[ data.game_name ];
-		if(this.game)
+		if( data.type == "game_event")
 		{
-			//this.game.start_time = data.start_time;
-			this.game.state = data.state;
+			if( data.action == "play_sound" )
+				GAMES.playSound( data.filename, data.volume, true, true );
+		}			
+			
+		if( data.type == "game_state")
+		{
+			var game = GAMES.gameClasses[ data.game_name ];
+			if(game)
+			{
+				if( this.game && this.game != game )
+				{
+					if(this.game.onLeave)
+						this.game.onLeave();
+				}
+				this.game = game;
+				if(game.onEnter)
+					game.onEnter();
+				//this.game.start_time = data.start_time;
+				this.game.state = data.state;
+			}
+			else
+			{
+				if(this.game)
+				{
+					if( this.game.onLeave )
+						this.game.onLeave();
+					this.game = null;
+				}
+			}
 		}
 	},
 	

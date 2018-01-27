@@ -27,10 +27,16 @@ var NETWORK = {
 			return;
 			
 		var msg = {
+			type: "game_state",
 			game_name: game.name,
 			state: game.state
 		};
 		this.send( msg );
+	},
+	
+	sendEvent: function( event )
+	{
+		this.send( event );
 	},
 	
 	onReady: function()
@@ -54,7 +60,6 @@ var NETWORK = {
 	{
 		SPECTATORSTAGE.onClientDisconnected( author_id );
 	},
-	
 
 	onClose: function()
 	{
