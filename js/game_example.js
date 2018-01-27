@@ -23,8 +23,20 @@ var GameExample = {
 		this.audio.loop = true;
 		this.audio.autoplay = false;
 		this.audio.volume = 0.0;
+	},
+	
+	//when starting to show this game
+	onEnter: function()
+	{
 		this.audio.play();
 	},
+	
+	//when ending showing this game
+	onLeave: function()
+	{
+		this.audio.pause();
+	},
+	
 	
 	//called when the game starts
 	//game_info contains difficulty_level:[0 easy, 5 hard]
@@ -69,7 +81,6 @@ var GameExample = {
 	},
 	
 	//called when moving to other game
-	//use to stop sounds or timers
 	onFinish: function()
 	{
 	}

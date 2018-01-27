@@ -50,7 +50,7 @@ var SPECTATORSTAGE = {
 
 		ctx.fillStyle = "white";
 		ctx.font = "8px pixel";
-		ctx.fillText(" spectating " + this.game.name, 0,10 );	
+		ctx.fillText(" spectating " + this.spectating_author, 0,10 );	
 	},
 	
 	onUpdate: function( dt )

@@ -20,6 +20,15 @@ var PLAYSTAGE = {
 	onEnter: function()
 	{
 		this.screen.scale = this.game.scale || 2;
+		
+		if(this.game && this.game.onEnter)
+			this.game.onEnter();
+	},
+	
+	onLeave: function()
+	{
+		if(this.game && this.game.onLeave)
+			this.game.onLeave();
 	},
 	
 	onRender: function( canvas )
