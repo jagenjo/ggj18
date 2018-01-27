@@ -21,14 +21,22 @@ var PLAYSTAGE = {
 	{
 		this.screen.scale = this.game.scale || 2;
 		
-		if(this.game && this.game.onEnter)
-			this.game.onEnter();
+		if(this.game)
+		{
+			if(this.game.onEnter)
+				this.game.onEnter();
+			this.game.playing = true;
+		}
 	},
 	
 	onLeave: function()
 	{
-		if(this.game && this.game.onLeave)
-			this.game.onLeave();
+		if(this.game)
+		{
+			if(this.game.onLeave)
+				this.game.onLeave();
+			this.game.playing = false;
+		}
 		NETWORK.sendEvent( { type: "game_left", game_name: this.game.name }); 
 	},
 	
@@ -49,7 +57,7 @@ var PLAYSTAGE = {
 
 		ctx.fillStyle = "white";
 		ctx.font = "8px pixel";
-		ctx.fillText(" playing " + this.game.name, 0,10 );	
+		ctx.fillText(" playing " + this.game.name + " " + NETWORK.id, 0,10 );	
 	},
 	
 	onUpdate: function( dt )
@@ -79,8 +87,9 @@ var PLAYSTAGE = {
 		e.posy = e.mousey / ( 2 ) - this.screen.y;
 		e.posx /= this.screen.scale;
 		e.posy /= this.screen.scale;
-		if( e.posx >= 0 && e.posx < this.screen.width &&
-			e.posy >= 0 && e.posy < this.screen.height )
+		if( e.type == "mousemove" || 
+			(e.posx >= 0 && e.posx < this.screen.width &&
+			e.posy >= 0 && e.posy < this.screen.height) )
 		{
 			if( this.game.onMouse )
 				this.game.onMouse(e);

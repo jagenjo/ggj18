@@ -11,20 +11,19 @@ CanvasRenderingContext2D.prototype.circle = function( x,y,r )
 	this.arc( x,y, r, 0, 2*Math.PI, false);
 }
 
-HTMLAudioElement.prototype.superloop = function( time )
+CanvasRenderingContext2D.prototype.drawImageCentered = function( img, x,y,s,r )
 {
-	if(this._superlooped )
-		return;
-
-	time = time || 0.44;
+	s = s || 1;
+	r = r || 0;
 	
-	this.addEventListener('timeupdate', function(){
-		if(this.currentTime > this.duration - time){
-			this.currentTime = time;
-			this.play();
-			console.log("back");
-		}	
-	}, false);
-	
-	this._superlooped = true;
+	this.save();
+	this.translate(x,y);
+	if(s != 1)
+		this.scale(s,s);
+	if(r != 0 )
+		this.rotate(r);
+	this.drawImage( img, img.width * -0.5, img.height * -0.5 ); 
+	this.restore();
 }
+
+var DEG2RAD = 0.0174533;

@@ -6,8 +6,6 @@ var NETWORK = {
 	
 	init: function()
 	{
-		this.id = ( getTime() + ((Math.random() * 1000)|0)).toString();
-	
 		this.server = new SillyClient();
 		this.server.connect("tamats.com:55000","ggj18");
 		this.server.on_ready = this.onReady.bind(this);
@@ -40,8 +38,9 @@ var NETWORK = {
 		this.send( event );
 	},
 	
-	onReady: function()
+	onReady: function(id)
 	{
+		this.id = id;
 		console.log("server ready");
 	},
 	

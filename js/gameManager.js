@@ -74,6 +74,11 @@ var GAMES = {
 		this.current_game.state = state;
 	},
 	
+	playerWin: function()
+	{
+		APP.changeStage( MENUSTAGE );
+	},
+	
 	playSound: function( filename, volume, skip_send, force_play )
 	{
 		//play local only if you are playing or comes from the server (no if you are spectating)
