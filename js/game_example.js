@@ -3,6 +3,7 @@
 
 var GameExample = {
 	name: "test",
+	scale: 1,
 	to_load: [], //urls of images and sounds to load
 	
 	//ALL GAME STATE SHOULD BE HERE, DO NOT STORE WEIRD STUFF LIKE IMAGES, DOM, ETC

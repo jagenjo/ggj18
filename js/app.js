@@ -10,7 +10,10 @@ var APP = {
 
 	init: function()
 	{
-		this.canvas = document.querySelector("canvas");
+		var main = this.main = document.querySelector("#main");
+		var canvas = this.canvas = document.querySelector("canvas");
+		
+		onResize();
 		
 		this.loop = new GameLoop( this.canvas );
 		this.loop.ondraw = this.render.bind(this);
@@ -28,6 +31,17 @@ var APP = {
 		this.changeStage( LOADSTAGE );
 		
 		this.loop.start();
+		
+		function onResize(e){
+			var w = window.screen.width;
+			var h = window.screen.height;
+			w = document.body.offsetWidth;
+			h = document.body.offsetHeight;
+			main.style.left = (((w - canvas.width*2) / 2)|0) + "px";
+			main.style.top = (((h - canvas.height*2) / 2)|0) + "px";
+		}
+		
+		window.onresize = onResize;
 	},
 		
 	render: function()

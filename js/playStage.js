@@ -10,7 +10,7 @@ var PLAYSTAGE = {
 		y: 8,
 		width: 256,
 		height: 224,
-		scale: 4
+		scale: 2
 	},
 	
 	onInit: function()
@@ -22,6 +22,7 @@ var PLAYSTAGE = {
 
 	onEnter: function()
 	{
+		this.screen.scale = this.game.scale || 2;
 		this.game_canvas.width = this.screen.width / this.screen.scale;
 		this.game_canvas.height = this.screen.height / this.screen.scale;
 	},
