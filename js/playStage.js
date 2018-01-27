@@ -49,6 +49,9 @@ var PLAYSTAGE = {
 
 		//ctx.drawImage( APP.assets["data/fondo.png"],0,0);
 		
+		ctx.fillStyle = "white";
+		ctx.fillRect( this.screen.x - 2, this.screen.y - 2, this.screen.width + 4, this.screen.height + 4 );
+		
 		var game_canvas = GAMES.renderGame( this.game, this.screen );
 		if( game_canvas )
 		{
@@ -58,7 +61,7 @@ var PLAYSTAGE = {
 
 		ctx.fillStyle = "white";
 		ctx.font = "8px pixel";
-		ctx.fillText(" playing " + this.game.name + " " + NETWORK.id, 0,10 );	
+		ctx.fillText( " " + NETWORK.id, 0,12 );	
 	},
 	
 	onUpdate: function( dt )

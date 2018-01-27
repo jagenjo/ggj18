@@ -59,7 +59,7 @@ var APP = {
 	{
 		var canvas = this.canvas;
 		var ctx = canvas.getContext("2d");
-		ctx.fillStyle = "red";
+		ctx.fillStyle = "black";
 		ctx.fillRect(0,0, this.canvas.width, this.canvas.height );
 
 		if( this.current_stage.onRender )
@@ -122,9 +122,17 @@ var APP = {
 		this.spectator_mode = this.main.classList.contains("spectator");
 		this.onResize();
 		if( this.spectator_mode )
-			this.changeStage( SPECTATORSTAGE );
+		{
+			this.canvas.width = this.main.offsetWidth;
+			this.canvas.height = this.main.offsetHeight;
+			this.changeStage( TOWERSTAGE );
+		}
 		else
+		{
+			this.canvas.width = 320;
+			this.canvas.height = 240;
 			this.changeStage( MENUSTAGE );
+		}
 		//this.changeStage( TOWERSTAGE );
 	}
 };

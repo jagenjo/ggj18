@@ -1,7 +1,7 @@
-var SPECTATORSTAGE = {
-	name: "spectator",
+var TOWERSTAGE = {
+	name: "tower",
 
-	to_load: [],
+	to_load: ["data/background.png", "data/tower/tv.png"],
 	game: null,
 	game_canvas: null,
 	
@@ -12,7 +12,15 @@ var SPECTATORSTAGE = {
 		y: 8,
 		width: 256,
 		height: 224,
-		scale: 2
+		scale: 1
+	},
+	
+	game_screen: {
+		x: 32,
+		y: 8,
+		width: 256,
+		height: 224,
+		scale: 1
 	},
 	
 	onInit: function()
@@ -36,6 +44,8 @@ var SPECTATORSTAGE = {
 	onRender: function( canvas )
 	{
 		var ctx = canvas.getContext("2d");
+		
+		ctx.drawImage( APP.assets[ "data/background.png" ], 0, 0 );
 	
 		if( this.spectating_author == -1 || !this.game )
 		{
@@ -44,23 +54,22 @@ var SPECTATORSTAGE = {
 			ctx.font = "16px pixel";
 			ctx.textAlign = "center";
 			var msg = this.bad_version ? (" BAD VERSION " + this.spectating_author ) : " NO SIGNAL... ";
-			ctx.fillText(msg, canvas.width * 0.5, canvas.height * 0.5 );	
+			ctx.fillText( msg, this.screen.x + this.screen.width * 0.5, this.screen.y + this.screen.height * 0.5 );	
 			ctx.textAlign = "left";
-			return;
 		}
-	
-		if(!this.game)
-			return;
+		else
+		{
+			this.game_screen.scale = this.game.scale;
+			var game_canvas = GAMES.renderGame( this.game, this.game_screen );
+			ctx.imageSmoothingEnabled = false;
+			ctx.drawImage( game_canvas, this.screen.x, this.screen.y, this.screen.width, this.screen.height );
+		}
 		
-		this.screen.scale = this.game.scale;
-		var game_canvas = GAMES.renderGame( this.game, this.screen );
-
-		ctx.imageSmoothingEnabled = false;
-		ctx.drawImage( game_canvas, this.screen.x, this.screen.y, this.screen.width, this.screen.height );
+		ctx.drawImage( APP.assets[ "data/tower/tv.png" ], 0, 0 );
 
 		ctx.fillStyle = "white";
 		ctx.font = "8px pixel";
-		ctx.fillText(" spectating " + this.spectating_author + "["+NETWORK.users.length+"]", 0,10 );	
+		//ctx.fillText(" spectating " + this.spectating_author + "["+NETWORK.users.length+"]", 0,10 );	
 	},
 	
 	onUpdate: function( dt )
@@ -196,5 +205,5 @@ var SPECTATORSTAGE = {
 	}
 };
 
-APP.registerStage( SPECTATORSTAGE );
+APP.registerStage( TOWERSTAGE );
 

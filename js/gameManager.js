@@ -76,7 +76,7 @@ var GAMES = {
 	
 	playerWin: function()
 	{
-		if( !SPECTATORSTAGE.active )
+		if( PLAYSTAGE.active )
 			APP.changeStage( MENUSTAGE );
 	},
 	
