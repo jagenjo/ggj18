@@ -3,6 +3,8 @@
 
 var GameExample = {
 	name: "test",
+	version: 0.1,
+	
 	scale: 5,
 	to_load: [], //urls of images and sounds to load
 	
