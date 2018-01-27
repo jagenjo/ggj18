@@ -42,8 +42,8 @@ var APP = {
 			h = document.body.offsetHeight;
 			if(main.classList.contains("spectator"))
 			{
-				main.style.left = (((w - canvas.width))|0) + "px";
-				main.style.top = (((h - canvas.height))|0) + "px";
+				main.style.left = (((w - main.offsetWidth)/2)|0) + "px";
+				main.style.top = (((h - main.offsetHeight)/2)|0) + "px";
 			}
 			else
 			{
@@ -82,9 +82,9 @@ var APP = {
 	
 	onKey: function(e)
 	{
-		if(e.keyCode == 79)
+		if(e.keyCode == 79 && e.type == "keydown")
 		{
-			this.enableSpectatorMode();
+			this.toggleSpectatorMode();
 			return;
 		}
 	
@@ -116,15 +116,15 @@ var APP = {
 			stage.onEnter();
 	},
 	
-	enableSpectatorMode: function()
+	toggleSpectatorMode: function()
 	{
-		if( this.spectator_mode )
-			return;
-		
-		this.spectator_mode = true;
-		this.main.classList.add("spectator");
+		this.main.classList.toggle("spectator");
+		this.spectator_mode = this.main.classList.contains("spectator");
 		this.onResize();
-		this.changeStage( SPECTATORSTAGE );
+		if( this.spectator_mode )
+			this.changeStage( SPECTATORSTAGE );
+		else
+			this.changeStage( MENUSTAGE );
 		//this.changeStage( TOWERSTAGE );
 	}
 };
