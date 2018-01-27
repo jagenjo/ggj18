@@ -3,14 +3,20 @@ var GAMES = {
 	games: [],
 	gameClasses: {},
 	current_game: null,
+	game_canvas: null,
 	
 	init: function()
 	{
+		this.game_canvas = document.createElement("canvas");
+		this.game_canvas.width = 256;
+		this.game_canvas.height = 224;
+	
 		//init all
 		for(var i in this.gameClasses )
 		{
 			var game = this.gameClasses[i];
-			game.init();
+			if(game.onInit)
+				game.onInit();
 		}
 	},
 	
@@ -19,7 +25,18 @@ var GAMES = {
 		if(!game.name)
 			throw("game without name");
 		this.gameClasses[ game.name ] = game;
+		if(!game.scale)
+			game.scale = 1;
 		this.games.push( game );
+	},
+	
+	renderGame: function( game, screen )
+	{
+		this.game_canvas.width = screen.width / screen.scale;
+		this.game_canvas.height = screen.height / screen.scale;
+		if( game.onRender )
+			game.onRender( this.game_canvas );	
+		return this.game_canvas;
 	},
 	
 	launchGame: function( game )
@@ -55,6 +72,8 @@ var GAMES = {
 		var state = JSON.parse( state );
 		this.current_game.start_time = getTime() - state.time * 1000;
 		this.current_game.state = state;
-	}
+	},
+	
+	
 	
 };
