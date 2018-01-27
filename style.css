@@ -18,6 +18,15 @@ html, body {
 	position: absolute;
 }
 
+#main.spectator {
+	width: 800px;
+	height: 600px;
+	background-color: black;
+	outline: 1px solid white;
+	position: absolute;
+}
+
+
 canvas {
 	width: 100%;
 	height: 100%;

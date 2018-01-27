@@ -5,6 +5,7 @@ var PLAYSTAGE = {
 	game: null,
 	game_canvas: null,
 	
+	
 	screen: {
 		x: 32,
 		y: 8,
@@ -46,7 +47,7 @@ var PLAYSTAGE = {
 			return;
 		var ctx = canvas.getContext("2d");
 
-		ctx.drawImage( APP.assets["data/fondo.png"],0,0);
+		//ctx.drawImage( APP.assets["data/fondo.png"],0,0);
 		
 		var game_canvas = GAMES.renderGame( this.game, this.screen );
 		if( game_canvas )

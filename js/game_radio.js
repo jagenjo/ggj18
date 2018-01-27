@@ -4,7 +4,7 @@ var GameRadio = {
 	version: 0.1,
 	
 	scale: 1,
-	to_load: ["data/radio/radio_bg.png","data/radio/radio_fg.png","data/radio/radio_led.png"],
+	to_load: ["data/radio/radio_bg.png","data/radio/radio_fg.png","data/radio/radio_led_good.png","data/radio/radio_led.png"],
 	
 	//ALL GAME STATE SHOULD BE HERE, DO NOT STORE WEIRD STUFF LIKE IMAGES, DOM, ETC
 	//GAME STATE IS SENT TO SERVER EVERY FRAME so keep it light
@@ -16,6 +16,8 @@ var GameRadio = {
 		solved: 0,
 		solution: 30
 	},
+	
+	smooth_freq: 90,
 	
 	//called after loading all games, init stuff here
 	onInit: function()
@@ -61,8 +63,6 @@ var GameRadio = {
 		this.state.solution = Math.random() > 0.5 ? 180 - Math.random() * 40 :  Math.random() * 40;
 	},
 	
-	smooth_freq: 0,
-	
 	//render one frame, DO NOT MODIFY STATE
 	onRender: function( canvas )
 	{
@@ -85,11 +85,24 @@ var GameRadio = {
 		ctx.drawImage( APP.assets["data/radio/radio_fg.png"],0,0);
 		
 		ctx.globalAlpha = ( this.state.accuracy < 0.8 ? this.state.accuracy : 1.0 ) * 0.8 + Math.random() * 0.2 * this.state.accuracy;
-		ctx.drawImage( APP.assets["data/radio/radio_led.png"],0,0);
+		ctx.drawImage( APP.assets[ this.state.accuracy < 0.9 ? "data/radio/radio_led.png" : "data/radio/radio_led_good.png"],0,0);
 		ctx.globalAlpha = 1;
 		
 		ctx.fillStyle = "cyan";
-		ctx.fillText( this.state.freq.toFixed(1) + " - " + this.state.solution.toFixed(1), 30,30 );
+		//ctx.fillText( this.state.freq.toFixed(1) + " - " + this.state.solution.toFixed(1), 30,30 );
+		
+		if(this.state.time < 2 )
+		{
+			ctx.lineWidth = 2;
+			ctx.font = "16px pixel";
+			ctx.textAlign = "center";
+			ctx.strokeStyle = "black";
+			ctx.fillStyle = "white";
+			ctx.strokeText( "FIND THE SIGNAL", canvas.width * 0.5, canvas.height * 0.25 );
+			ctx.fillText( "FIND THE SIGNAL", canvas.width * 0.5, canvas.height * 0.25 );
+			ctx.textAlign = "left";
+			ctx.lineWidth = 1;
+		}
 		
 		if(this.state.win_time > 0 )
 		{
