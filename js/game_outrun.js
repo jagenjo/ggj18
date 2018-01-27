@@ -3,7 +3,7 @@ var GameOutrun = {
 	name: "outrun",
 	version: 1,
 	scale: 1,
-	to_load: ["data/outrun/ball8.png", "data/outrun/boxgear.png", "data/outrun/car.png", "data/outrun/fondo.png", "data/outrun/police.png", "data/outrun/explossion.png"], //urls of images and sounds to load
+	to_load: ["data/outrun/ball8.png", "data/outrun/boxgear.png", "data/outrun/car.png", "data/outrun/carfuck.png", "data/outrun/fondo.png", "data/outrun/police.png", "data/outrun/explossion.png"], //urls of images and sounds to load
 	
 	//ALL GAME STATE SHOULD BE HERE, DO NOT STORE WEIRD STUFF LIKE IMAGES, DOM, ETC
 	//GAME STATE IS SENT TO SERVER EVERY FRAME so keep it light
@@ -90,7 +90,7 @@ var GameOutrun = {
 		ctx.clip();
 		this.drawRoad(ctx, 100, 224);
 		ctx.drawImage( APP.assets["data/outrun/police.png"], this.state.police + 80, 100 );
-		ctx.drawImageCentered( APP.assets["data/outrun/car.png"], 125, 180 - this.state.car, 1 - this.state.car/200);
+		ctx.drawImageCentered( APP.assets[this.state.car < 50 ? "data/outrun/car.png" : "data/outrun/carfuck.png"], 125, 180 - this.state.car, 1 - this.state.car/200);
 		if(this.state.boom_time > 0){
 			ctx.drawImageCentered( APP.assets["data/outrun/explossion.png"], this.state.police + 110, 180 - this.state.car, 1 + 2*Math.random(), Math.floor(4*Math.random()) * 90);
 		}else if(this.state.state == 1){
