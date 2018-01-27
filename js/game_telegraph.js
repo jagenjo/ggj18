@@ -19,8 +19,8 @@ var GameTelegraph = {
 		mousePressCooldown: 0,
 		morse: "--. .- -- .",
 		morseProgress: 0,
-		win: false,
-		fail: false,
+		state: 0,
+		volume: 0,
 	},
 
 	//called after loading all games, init stuff here
@@ -30,7 +30,12 @@ var GameTelegraph = {
 		this.audio.autoplay = false;
 		this.audio.src = "data/telegraph/beep.mp3";
 		this.audio.loop = true;
-		this.audio.volume = 0;
+		this.audio.volume = this.state.volume;
+		this.audioWin = new Audio();
+		this.audioWin.autoplay = false;
+		this.audioWin.loop = false;
+		this.audioWin.src = "data/win1.wav";
+		this.audioWin.volume = 0.5;
 	},
 
 	onEnter: function()
@@ -90,8 +95,8 @@ var GameTelegraph = {
 		ctx.font = "8px pixel";
 		ctx.fillText("Send:", 10, 20);
 
-		if(this.state.win) ctx.fillStyle = "green";
-		else if(this.state.fail) ctx.fillStyle = "red";
+		if(this.state.state == 2) ctx.fillStyle = "#8bc34a";
+		else if(this.state.state == 1) ctx.fillStyle = "red";
 		this.drawMorse(ctx, this.state.morse, 50, 20);
 	},
 
@@ -106,13 +111,13 @@ var GameTelegraph = {
 			if(m == this.state.morse[this.state.morseProgress]) this.state.morseProgress += 1;
 			else {
 				this.state.morseProgress = 0;
-				this.state.fail = true;
+				this.state.state = 1;
 			}
 		}else if(this.state.time - this.state.mouseup_when > 0.3){
 			if(" " == this.state.morse[this.state.morseProgress]) this.state.morseProgress += 1;
 		}
 
-		if(this.state.morseProgress >= this.state.morse.length) this.state.win = true;
+		if(this.state.state != 2 && this.state.morseProgress >= this.state.morse.length) this.win();
 		
 	},
 
@@ -125,17 +130,18 @@ var GameTelegraph = {
 		this.checkMorse();
 
 		if(this.state.mousedown){
-			this.audio.volume = 0.5;
+			this.state.volume = 0.5;
 			this.state.background = this.state.mousePressCooldown > 0 ? 1 : 2;
 		}else{
 			if(this.state.mousePressCooldown <= 0){
-				this.audio.volume = 0;
+				this.state.volume = 0;
 				this.state.background = 0;
 			}else{
 				this.state.background = 1;
 			}
 		}
 
+		this.audio.volume = this.state.volume;
 		this.state.mousePressCooldown -= dt;
 		this.state.mousebutton_was_released = false;
 	},
@@ -143,7 +149,7 @@ var GameTelegraph = {
 	onMouse: function( e )
 	{
 		if(e.type == "mousedown"){
-			this.state.fail = false;
+			this.state.state = 0;
 			this.state.mousedown_when = this.state.time;
 			this.state.mousePressCooldown = 0.1 - (this.state.mousePressCooldown > 0 ? this.state.mousePressCooldown : 0);
 		}else if(e.type == "mouseup"){
@@ -151,6 +157,12 @@ var GameTelegraph = {
 			this.state.mousePressCooldown = 0.1 - (this.state.mousePressCooldown > 0 ? this.state.mousePressCooldown : 0);
 			this.state.mousebutton_was_released = true;
 		}
+	},
+
+	win: function()
+	{
+		this.state.state = 2;
+		this.audioWin.play();
 	},
 	
 	//called when moving to other game
