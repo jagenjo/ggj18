@@ -29,6 +29,8 @@ var APP = {
 				stage.onInit();
 		}
 		
+		GAMES.init();
+		
 		this.changeStage( LOADSTAGE );
 		
 		this.loop.start();
@@ -88,11 +90,13 @@ var APP = {
 			
 		if(this.current_stage)
 		{
+			this.current_stage.active = false;
 			if(this.current_stage.onLeave)
 				this.current_stage.onLeave();
 		}		
 		
 		this.current_stage = stage;
+		this.current_stage.active = true;
 		if(stage.onEnter)
 			stage.onEnter();
 	}

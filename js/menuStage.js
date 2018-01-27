@@ -61,6 +61,8 @@ var MENUSTAGE = {
 	{
 		if( e.type == "keydown" )
 		{
+			if(e.keyCode == 80 )
+				APP.changeStage( SPECTATORSTAGE );
 			if(e.keyCode == 38 )
 				this.selected--;
 			if(e.keyCode == 40 )

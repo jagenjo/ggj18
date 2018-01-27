@@ -45,9 +45,11 @@ var GameExample = {
 		for(var i = 0; i < this.state.blips.length; ++i)
 		{
 			var blip = 	this.state.blips[i];
+			ctx.globalAlpha = Math.max(0, 1.0 - (this.state.time - blip.time) * 0.5 );
 			ctx.circle( blip.x, blip.y, (this.state.time - blip.time) * 10 );
 			ctx.stroke();
 		}
+		ctx.globalAlpha = 1;
 	},
 
 	//update game state	
