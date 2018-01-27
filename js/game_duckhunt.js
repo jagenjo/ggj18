@@ -2,7 +2,7 @@
 //GAME.finish(score) //to finish
 
 var GameDuckHunt = {
-	version: 0.2,
+	version: 0.3,
 	name: "messenger pigeon",
 	scale: 2,
 	to_load: ["data/duckhunt/diana.png", "data/duckhunt/fondo.png", "data/duckhunt/paloma.png", "data/duckhunt/palomagame.png", "data/duckhunt/paloma1.png"], //urls of images and sounds to load
@@ -96,7 +96,7 @@ var GameDuckHunt = {
 			
 		}
 
-		ctx.drawImageCentered( APP.assets["data/duckhunt/diana.png"], w/2, h/2, 0.7);
+		ctx.drawImageCentered( APP.assets["data/duckhunt/diana.png"], (Math.sin(this.state.time) + Math.sin(3*this.state.time) + Math.sin(7*this.state.time) )/3 + w/2, (Math.sin(this.state.time) + Math.sin(2*this.state.time) + Math.sin(10*this.state.time) )/3 + h/2, 0.7);
 		if(this.state.wins > 2 )
 		{
 			ctx.textAlign = "center";
