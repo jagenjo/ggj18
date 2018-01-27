@@ -13,9 +13,12 @@ var MENUSTAGE = {
 	onRender: function( canvas )
 	{
 		var ctx = canvas.getContext("2d");
-		
 		ctx.fillStyle = "white";
+		ctx.fillRect(0,0,canvas.width,canvas.height);
+		ctx.fillStyle = "black";
 		var y = 30;
+		
+		ctx.globalAlpha = Math.clamp( getTime() * 0.001 - this.start_time, 0,1 ); 
 		ctx.font = "16px pixel";
 		ctx.fillText( "SELECT GAME", 10, y );
 		y += 30;
@@ -26,6 +29,7 @@ var MENUSTAGE = {
 			ctx.fillText( (this.selected == i ? "] " : "") + game.name.toUpperCase(), 20, y );
 			y += 24;
 		}
+		ctx.globalAlpha = 1; 
 	},
 	
 	selectGame: function( game )

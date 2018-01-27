@@ -39,9 +39,10 @@ var LOADSTAGE = {
 	onRender: function( canvas )
 	{
 		var ctx = canvas.getContext("2d");
+		ctx.fillStyle = "black";
+		ctx.fillRect(0,0,canvas.width,canvas.height);
 		ctx.fillStyle = "white";
-		ctx.fillText(" loading ... " + this.loading, 20,20 );	
-		
+		ctx.fillRect(0,0,canvas.width * this.loading,canvas.height);
 	},
 	
 	onUpdate: function( dt )

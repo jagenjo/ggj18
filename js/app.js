@@ -40,10 +40,18 @@ var APP = {
 			var h = window.screen.height;
 			w = document.body.offsetWidth;
 			h = document.body.offsetHeight;
-			main.style.left = (((w - canvas.width*2) / 2)|0) + "px";
-			main.style.top = (((h - canvas.height*2) / 2)|0) + "px";
+			if(main.classList.contains("spectator"))
+			{
+				main.style.left = (((w - canvas.width))|0) + "px";
+				main.style.top = (((h - canvas.height))|0) + "px";
+			}
+			else
+			{
+				main.style.left = (((w - canvas.width*2) / 2)|0) + "px";
+				main.style.top = (((h - canvas.height*2) / 2)|0) + "px";
+			}
 		}
-		
+		this.onResize = onResize;
 		window.onresize = onResize;
 	},
 		
@@ -74,6 +82,12 @@ var APP = {
 	
 	onKey: function(e)
 	{
+		if(e.keyCode == 79)
+		{
+			this.enableSpectatorMode();
+			return;
+		}
+	
 		if( this.current_stage.onKey )
 			this.current_stage.onKey(e);
 	},
@@ -97,8 +111,21 @@ var APP = {
 		
 		this.current_stage = stage;
 		this.current_stage.active = true;
+		this.current_stage.start_time = getTime() * 0.001;
 		if(stage.onEnter)
 			stage.onEnter();
+	},
+	
+	enableSpectatorMode: function()
+	{
+		if( this.spectator_mode )
+			return;
+		
+		this.spectator_mode = true;
+		this.main.classList.add("spectator");
+		this.onResize();
+		this.changeStage( SPECTATORSTAGE );
+		//this.changeStage( TOWERSTAGE );
 	}
 };
 
