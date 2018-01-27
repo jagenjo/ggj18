@@ -29,6 +29,7 @@ var NETWORK = {
 		var msg = {
 			type: "game_state",
 			game_name: game.name,
+			version: game.version,
 			state: game.state
 		};
 		this.send( msg );

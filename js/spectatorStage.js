@@ -5,6 +5,9 @@ var SPECTATORSTAGE = {
 	game: null,
 	game_canvas: null,
 	
+	users: [],
+	users_by_id: {},
+	
 	spectating_author: -1,
 	
 	screen: {
@@ -83,25 +86,47 @@ var SPECTATORSTAGE = {
 		{
 			if( data.action == "play_sound" )
 				GAMES.playSound( data.filename, data.volume, true, true );
+			return;
 		}			
+		else if( data.type == "game_left" )
+		{
+			this.spectating_author = -1;
+
+			//remove			
+			var user = this.users_by_id[ author_id ];
+			var index = this.users.indexOf( user );
+			if( index != -1 )
+				this.users.splice( index, 1 );
+			delete this.users_by_id[ author_id ];
+			return;
+		}
 			
 		if( data.type == "game_state")
 		{
+			if(!this.users_by_id[ author_id ])
+				this.onNewUser( author_id, data );	
+				
+			this.users_by_id[ author_id ].last_data = data;
+		
+			//search game
 			var game = GAMES.gameClasses[ data.game_name ];
-			if(game)
+			if( game && game.version == data.version )
 			{
-				if( this.game && this.game != game )
+				if( this.game != game )
 				{
-					if(this.game.onLeave)
-						this.game.onLeave();
+					if( this.game )
+					{
+						if(this.game.onLeave)
+							this.game.onLeave();
+					}
+					this.game = game;
+					if(game.onEnter)
+						game.onEnter();
 				}
-				this.game = game;
-				if(game.onEnter)
-					game.onEnter();
 				//this.game.start_time = data.start_time;
 				this.game.state = data.state;
 			}
-			else
+			else //game not found
 			{
 				if(this.game)
 				{
@@ -113,6 +138,16 @@ var SPECTATORSTAGE = {
 		}
 	},
 	
+	onNewUser: function( author_id, game_data )
+	{
+		var user = {
+			id: author_id,
+			last_data: game_data
+		};
+		this.users.push( user );
+		this.users_by_id[ author_id ] = user;
+	},
+	
 	onClientConnected: function( author_id )
 	{
 	},
@@ -122,6 +157,14 @@ var SPECTATORSTAGE = {
 		console.log("author leave");
 		if( this.spectating_author == author_id )
 			this.spectating_author = -1;
+	},
+	
+	nextClient: function()
+	{
+		if( this.spectating_author == - 1)
+		{
+			
+		}
 	},
 	
 	onMouse: function(e)

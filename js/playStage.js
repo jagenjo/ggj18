@@ -29,6 +29,7 @@ var PLAYSTAGE = {
 	{
 		if(this.game && this.game.onLeave)
 			this.game.onLeave();
+		NETWORK.sendEvent( { type: "game_left", game_name: this.game.name }); 
 	},
 	
 	onRender: function( canvas )
