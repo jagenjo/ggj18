@@ -3,12 +3,13 @@
 
 var GameTelegraph = {
 	name: "telegraph",
-	to_load: [], //urls of images and sounds to load
+	scale: 2,
+	to_load: ["data/telegraph/sprite_1.png", "data/telegraph/sprite_2.png", "data/telegraph/sprite_3.png"], //urls of images and sounds to load
 	
 	//ALL GAME STATE SHOULD BE HERE, DO NOT STORE WEIRD STUFF LIKE IMAGES, DOM, ETC
 	//GAME STATE IS SENT TO SERVER EVERY FRAME so keep it light
 	state: {
-		time: 0
+		time: 0, //time since game started
 	},
 
 	//called after loading all games, init stuff here
@@ -28,6 +29,8 @@ var GameTelegraph = {
 	//render one frame, DO NOT MODIFY STATE
 	onRender: function( canvas )
 	{
+		var ctx = canvas.getContext("2d");
+		ctx.drawImage( APP.assets["data/telegraph/sprite_1.png"],-50,-50);
 	},
 
 	//update game state	
@@ -36,8 +39,10 @@ var GameTelegraph = {
 	{
 	},
 	
-	onClick: function( e )
+	onMouse: function( e )
 	{
+		//if(e.type == "mousedown" )
+		//	this.state.blips.push( { x: e.posx, y: e.posy, time: this.state.time } );
 	},
 	
 	//called when moving to other game
