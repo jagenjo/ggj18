@@ -1,8 +1,6 @@
-//API CALLS
-//GAMES.playerWin(score) //to finish
 
-var GameExample = {
-	name: "test",
+var GameRadio = {
+	name: "radio",
 	version: 0.1,
 	
 	scale: 5,
@@ -104,5 +102,5 @@ var GameExample = {
 };
 
 //register in DB
-GAMES.registerGame( GameExample );
+GAMES.registerGame( GameRadio );
 
