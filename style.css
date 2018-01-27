@@ -11,6 +11,7 @@ html, body {
 }
 
 #main {
+	overflow: hidden;
 	width: 640px;
 	height: 480px;
 	background-color: black;

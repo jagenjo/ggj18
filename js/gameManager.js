@@ -76,7 +76,8 @@ var GAMES = {
 	
 	playerWin: function()
 	{
-		APP.changeStage( MENUSTAGE );
+		if( !SPECTATORSTAGE.active )
+			APP.changeStage( MENUSTAGE );
 	},
 	
 	playSound: function( filename, volume, skip_send, force_play )
