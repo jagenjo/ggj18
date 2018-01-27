@@ -15,6 +15,7 @@ var GameExample = {
 		mousedown: false,
 		mousedown_was_pressed: false,
 		blips: [],
+		win: -1,
 		volume: 0.0
 	},
 
@@ -48,6 +49,7 @@ var GameExample = {
 	{
 		//reset game state
 		this.state.time = 0;
+		this.state.win = -1;
 		this.state.blips.length = 0;
 	},
 	
@@ -66,6 +68,17 @@ var GameExample = {
 			ctx.stroke();
 		}
 		ctx.globalAlpha = 1;
+		
+		if(this.state.win > 0 )
+		{
+			ctx.textAlign = "center";
+			ctx.fillStyle = "gray";
+			ctx.fillText( "WINNER!!", canvas.width * 0.5 + Math.random()*2-1, canvas.height * 0.5 + Math.random()*2-1 );
+			ctx.fillStyle = "white";
+			ctx.fillText( "WINNER!!", canvas.width * 0.5 + Math.random()*2-1, canvas.height * 0.5 + Math.random()*2-1 );
+			ctx.textAlign = "left";
+		} 
+		
 	},
 
 	//update game state	
@@ -74,6 +87,8 @@ var GameExample = {
 	{
 		this.state.volume = Math.max( 0, this.state.volume - dt );
 		this.audio.volume = this.state.volume;
+		if( this.state.win != -1 && ( this.state.win + 2 ) < this.state.time && this.state.time > 2)
+			GAMES.playerWin();
 	},
 	
 	onMouse: function( e )
@@ -81,6 +96,8 @@ var GameExample = {
 		if(e.type == "mousedown" )
 		{
 			this.state.blips.push( { x: e.posx, y: e.posy, time: this.state.time } );
+			if( this.state.blips.length > 4 )
+				this.state.win = this.state.time;
 			GAMES.playSound("data/sounds/water.wav",0.5);
 		}
 	},

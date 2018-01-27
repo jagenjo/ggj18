@@ -186,7 +186,15 @@ var SPECTATORSTAGE = {
 		index = (index + 1) % this.users.length;
 		user = this.users[ index ];
 		if(user)
-			this.spectating_author = user.id;
+		{
+			var game = GAMES.gameClasses[ user.last_data.game_name ];
+			if( game.version == user.last_data.version )
+			{
+				this.spectating_author = user.id;
+			}
+			else
+				this.game = null;
+		}
 	},
 	
 	onMouse: function(e)

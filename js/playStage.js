@@ -21,14 +21,22 @@ var PLAYSTAGE = {
 	{
 		this.screen.scale = this.game.scale || 2;
 		
-		if(this.game && this.game.onEnter)
-			this.game.onEnter();
+		if(this.game)
+		{
+			if(this.game.onEnter)
+				this.game.onEnter();
+			this.game.playing = true;
+		}
 	},
 	
 	onLeave: function()
 	{
-		if(this.game && this.game.onLeave)
-			this.game.onLeave();
+		if(this.game)
+		{
+			if(this.game.onLeave)
+				this.game.onLeave();
+			this.game.playing = false;
+		}
 		NETWORK.sendEvent( { type: "game_left", game_name: this.game.name }); 
 	},
 	
