@@ -18,6 +18,12 @@ var GameExample = {
 	//called after loading all games, init stuff here
 	onInit: function()
 	{
+		this.audio = new Audio();
+		this.audio.src = "data/telegraph/beep.mp3";
+		this.audio.loop = true;
+		this.audio.autoplay = false;
+		this.audio.volume = 0.0;
+		this.audio.play();
 	},
 	
 	//called when the game starts
@@ -48,12 +54,16 @@ var GameExample = {
 	//ONLY USE INPUT_STATE TO COMPUTE NEW GAME_STATE
 	onUpdate: function( dt )
 	{
+		this.audio.volume = Math.max( 0, this.audio.volume - dt );
 	},
 	
 	onMouse: function( e )
 	{
 		if(e.type == "mousedown" )
+		{
 			this.state.blips.push( { x: e.posx, y: e.posy, time: this.state.time } );
+			this.audio.volume = 0.5;
+		}
 	},
 	
 	//called when moving to other game
