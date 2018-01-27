@@ -83,7 +83,13 @@ var SPECTATORSTAGE = {
 		{
 			if( data.action == "play_sound" )
 				GAMES.playSound( data.filename, data.volume, true, true );
+			return;
 		}			
+		else if( data.type == "game_left" )
+		{
+			this.spectating_author = -1;
+			return;
+		}
 			
 		if( data.type == "game_state")
 		{
