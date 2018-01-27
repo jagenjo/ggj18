@@ -2,7 +2,7 @@
 //GAME.finish(score) //to finish
 
 var GameDuckHunt = {
-	version: 0.1,
+	version: 0.2,
 	name: "messenger pigeon",
 	scale: 2,
 	to_load: ["data/duckhunt/diana.png", "data/duckhunt/fondo.png", "data/duckhunt/paloma.png", "data/duckhunt/palomagame.png", "data/duckhunt/paloma1.png"], //urls of images and sounds to load
@@ -21,6 +21,7 @@ var GameDuckHunt = {
 		pigeondown: 0,
 		shotCooldown: 0,
 		shotDuration: 0,
+		wins: 0,
 	},
 
 	//called after loading all games, init stuff here
@@ -36,6 +37,14 @@ var GameDuckHunt = {
 	{
 	},
 	
+	restart: function(){
+		this.state.win_time = -1;
+		this.state.pigeon = 0;
+		this.state.pigeondown = 0;
+		this.state.shotCooldown = 0;
+		this.state.shotDuration = 0;
+	},
+
 	//called when the game starts
 	//game_info contains difficulty_level:[0 easy, 5 hard]
 	//use this to reset all the game state
@@ -43,11 +52,8 @@ var GameDuckHunt = {
 	{
 		//reset game state
 		this.state.time = 0;
-		this.state.win_time = -1;
-		this.state.pigeon = 0;
-		this.state.pigeondown = 0;
-		this.state.shotCooldown = 0;
-		this.state.shotDuration = 0;
+		this.state.wins = 0;
+		this.restart();
 	},
 	
 	//render one frame, DO NOT MODIFY STATE
@@ -75,9 +81,23 @@ var GameDuckHunt = {
 
 		ctx.drawImageCentered( APP.assets[this.pigeon[this.state.win_time < 0 ? Math.floor(this.state.time*10) % 2 : 1]], this.state.pigeon, ctx.canvas.height/2 + this.state.pigeondown, 1);
 
+		var p = APP.assets["data/duckhunt/paloma.png"];
+		for(var i = 0; i < 3; i++){
+			if(this.state.wins > i){
+				ctx.drawImageCentered( p, w - 15*(i+1), h - 20, 0.1, 180);
+				ctx.strokeStyle = "red";
+				ctx.beginPath();
+				ctx.moveTo(w - 15*(i+1) - 5, h - 25);
+				ctx.lineTo(w - 15*(i+1) + 5, h - 15);
+				ctx.stroke();
+			}else{
+				ctx.drawImageCentered( p, w - 15*(i+1), h - 20, 0.1, 0);
+			}
+			
+		}
 
 		ctx.drawImageCentered( APP.assets["data/duckhunt/diana.png"], w/2, h/2, 0.7);
-		if(this.state.win_time > 0 )
+		if(this.state.wins > 2 )
 		{
 			ctx.textAlign = "center";
 			ctx.font = "16px pixel";
@@ -85,6 +105,14 @@ var GameDuckHunt = {
 			ctx.fillText( "WINNER!!", canvas.width * 0.5 + Math.random()*2-1, canvas.height * 0.5 + Math.random()*2-1 );
 			ctx.fillStyle = "white";
 			ctx.fillText( "WINNER!!", canvas.width * 0.5 + Math.random()*2-1, canvas.height * 0.5 + Math.random()*2-1 );
+			ctx.textAlign = "left";
+		}else if(this.state.win_time > 0){
+			ctx.textAlign = "center";
+			ctx.font = "16px pixel";
+			ctx.fillStyle = "black";
+			ctx.fillText( "HIT!!", canvas.width * 0.5 + Math.random()*2-1, canvas.height * 0.5 + Math.random()*2-1 );
+			ctx.fillStyle = "white";
+			ctx.fillText( "HIT!!", canvas.width * 0.5 + Math.random()*2-1, canvas.height * 0.5 + Math.random()*2-1 );
 			ctx.textAlign = "left";
 		}
 
@@ -97,7 +125,7 @@ var GameDuckHunt = {
 	onUpdate: function( dt )
 	{
 		if(this.state.win_time < 0){
-			this.state.pigeon = Math.floor(this.state.pigeon + dt*200)%(1.5*this.width);
+			this.state.pigeon = Math.floor(this.state.pigeon + dt*75*(1+this.state.wins))%(1.5*this.width);
 			this.state.shotCooldown -= dt;
 			this.state.shotDuration -= dt;
 		}else{
@@ -105,8 +133,11 @@ var GameDuckHunt = {
 			this.state.pigeondown += dt*20;
 
 			if(this.state.win_time + 2 < this.state.time){
-				GAMES.playerWin();
-				return;
+				if(this.state.wins > 2){
+					GAMES.playerWin();
+					return;
+				}
+				this.restart();
 			}
 		}
 		
@@ -118,8 +149,11 @@ var GameDuckHunt = {
 			this.state.shotCooldown = 1;
 			this.state.shotDuration = 0.1;
 			if(this.state.pigeon > this.width/2 - 5 && this.state.pigeon < this.width/2 + 5){
+				this.state.wins += 1;
 				this.state.win_time = this.state.time;
-				GAMES.playSound("data/win1.wav", 0.5);
+				if(this.state.wins > 2){
+					GAMES.playSound("data/win1.wav", 0.5);
+				}
 			}
 		}
 	},
