@@ -28,6 +28,7 @@ var GameTelegraph = {
 		morse: "",
 		morseProgress: 0,
 		state: 0,
+		win_time: -1,
 		volume: 0,
 	},
 
@@ -58,7 +59,10 @@ var GameTelegraph = {
 	{
 		//reset game state
 		this.state.time = 0;
-		this.state.morse = this.morseCodes[Math.floor(Math.random() * this.morseCodes.length)];
+		this.state.state = 0;
+		this.state.win_time = -1;
+		this.state.morseProgress = 0;
+		this.state.morse = this.morseCodes[ Math.floor(Math.random() * this.morseCodes.length) ];
 	},
 
 	drawMorse: function( ctx, code, x, y )
@@ -102,10 +106,28 @@ var GameTelegraph = {
 		if(this.state.state == 2) ctx.fillStyle = "#8bc34a";
 		else if(this.state.state == 1) ctx.fillStyle = "red";
 		this.drawMorse(ctx, this.state.morse, 50, 20);
+		
+		if(this.state.win_time > 0 )
+		{
+			ctx.textAlign = "center";
+			ctx.font = "16px pixel";
+			ctx.fillStyle = "black";
+			ctx.fillText( "WINNER!!", canvas.width * 0.5 + Math.random()*2-1, canvas.height * 0.5 + Math.random()*2-1 );
+			ctx.fillStyle = "white";
+			ctx.fillText( "WINNER!!", canvas.width * 0.5 + Math.random()*2-1, canvas.height * 0.5 + Math.random()*2-1 );
+			ctx.textAlign = "left";
+		} 
+		
 	},
 
 	checkMorse()
 	{
+		if(this.state.win_time > -1 && (this.state.win_time + 2) < this.state.time )
+		{
+			GAMES.playerWin();
+			return;
+		}
+	
 		var m;
 		if(this.state.mousebutton_was_released){
 			var t = this.state.time - this.state.mousedown_when;
@@ -121,7 +143,12 @@ var GameTelegraph = {
 			if(" " == this.state.morse[this.state.morseProgress]) this.state.morseProgress += 1;
 		}
 
-		if(this.state.state != 2 && this.state.morseProgress >= this.state.morse.length) this.win();
+		if(this.state.state != 2 && this.state.morseProgress >= this.state.morse.length)
+		{
+			this.state.win_time = this.state.time;
+			this.state.state = 2;
+			GAMES.playSound("data/win1.wav", 0.5);
+		}
 		
 	},
 
@@ -163,12 +190,6 @@ var GameTelegraph = {
 		}
 	},
 
-	win: function()
-	{
-		this.state.state = 2;
-		GAMES.playSound("data/win1.wav", 0.5);
-	},
-	
 	//called when moving to other game
 	//use to stop sounds or timers
 	onFinish: function()

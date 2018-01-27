@@ -96,7 +96,7 @@ var GameExample = {
 		if(e.type == "mousedown" )
 		{
 			this.state.blips.push( { x: e.posx, y: e.posy, time: this.state.time } );
-			if( this.state.blips.length > 4 )
+			if( this.state.win == -1 && this.state.blips.length > 4 )
 				this.state.win = this.state.time;
 			GAMES.playSound("data/sounds/water.wav",0.5);
 		}
