@@ -16,7 +16,7 @@ var GameRadio = {
 		solved: 0,
 		solution: 30
 	},
-
+	
 	//called after loading all games, init stuff here
 	onInit: function()
 	{
@@ -58,8 +58,10 @@ var GameRadio = {
 		this.state.freq = 100;
 		this.state.solved = 0;
 		this.state.accuracy = 0;
-		this.state.solution =  Math.random() * 40 + 10;
+		this.state.solution = Math.random() > 0.5 ? 180 - Math.random() * 40 :  Math.random() * 40;
 	},
+	
+	smooth_freq: 0,
 	
 	//render one frame, DO NOT MODIFY STATE
 	onRender: function( canvas )
@@ -70,7 +72,8 @@ var GameRadio = {
 		
 		ctx.save();
 		ctx.translate(118,157);
-		ctx.rotate( this.state.freq * DEG2RAD );
+		ctx.rotate( this.smooth_freq * DEG2RAD );
+		this.smooth_freq = this.smooth_freq * 0.8 + (this.state.freq + Math.random()) * 0.2;
 		ctx.strokeStyle = "black";
 		ctx.lineWidth = 2;
 		ctx.beginPath();
@@ -107,8 +110,9 @@ var GameRadio = {
 	{
 		this.state.accuracy = Math.max( 0, 1.0 - Math.abs( this.state.freq - this.state.solution ) / 10 );
 		this.state.accuracy = Math.clamp( this.state.accuracy, 0, 1);
-		this.audio_static.volume = (1.0 - this.state.accuracy) * 0.5;
-		this.audio_morse.volume = this.state.accuracy * 0.5;
+		var f = Math.pow( this.state.accuracy, 1.2 );
+		this.audio_static.volume = (1.0 - f) * 0.5;
+		this.audio_morse.volume = f * 0.5;
 		
 		if( this.state.accuracy > 0.8 )
 			this.state.solved += dt * 0.5;
