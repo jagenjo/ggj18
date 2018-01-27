@@ -146,6 +146,7 @@ var GameOutrun = {
 				}
 			}else if(this.state.boom_time > 0 && this.state.boom_time + 2 < this.state.time){
 				//Reset
+				this.state.transmission_time = 0;
 				this.state.boom_time = -1;
 				this.state.car = 0;
 				this.state.car_accelerate = false;
@@ -169,7 +170,7 @@ var GameOutrun = {
 	
 	onMouse: function( e )
 	{
-		if(e.type == "mousedown"){
+		if(e.type == "mousedown" && this.state.transmission_time == 0){
 			this.state.state = 1;
 			this.state.transmission_time = this.state.time;
 		}

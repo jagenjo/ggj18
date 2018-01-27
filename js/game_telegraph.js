@@ -179,11 +179,11 @@ var GameTelegraph = {
 	
 	onMouse: function( e )
 	{
-		if(e.type == "mousedown"){
+		if(e.type == "mousedown" && this.state.win_time < 0){
 			this.state.state = 0;
 			this.state.mousedown_when = this.state.time;
 			this.state.mousePressCooldown = 0.1 - (this.state.mousePressCooldown > 0 ? this.state.mousePressCooldown : 0);
-		}else if(e.type == "mouseup"){
+		}else if(e.type == "mouseup" && this.state.win_time < 0){
 			this.state.mouseup_when = this.state.time;
 			this.state.mousePressCooldown = 0.1 - (this.state.mousePressCooldown > 0 ? this.state.mousePressCooldown : 0);
 			this.state.mousebutton_was_released = true;
