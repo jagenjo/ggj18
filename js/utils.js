@@ -11,13 +11,17 @@ CanvasRenderingContext2D.prototype.circle = function( x,y,r )
 	this.arc( x,y, r, 0, 2*Math.PI, false);
 }
 
-CanvasRenderingContext2D.prototype.drawImageCentered = function( img, x,y,s )
+CanvasRenderingContext2D.prototype.drawImageCentered = function( img, x,y,s,r )
 {
 	s = s || 1;
+	r = r || 0;
 	
 	this.save();
 	this.translate(x,y);
-	this.scale(s,s);
+	if(s != 1)
+		this.scale(s,s);
+	if(r != 0 )
+		this.rotate(r);
 	this.drawImage( img, img.width * -0.5, img.height * -0.5 ); 
 	this.restore();
 }

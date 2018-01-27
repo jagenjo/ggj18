@@ -10,33 +10,39 @@ var GameRadio = {
 	//GAME STATE IS SENT TO SERVER EVERY FRAME so keep it light
 	state: {
 		time: 0, //time since game started
-		mousedown: false,
-		mousedown_was_pressed: false,
-		blips: [],
 		win: -1,
-		volume: 0.0
+		freq: 90,
+		accuracy: 0,
+		solution: 30
 	},
 
 	//called after loading all games, init stuff here
 	onInit: function()
 	{
-		this.audio = new Audio();
-		this.audio.src = "data/telegraph/beep.mp3";
-		this.audio.loop = true;
-		this.audio.autoplay = false;
-		this.audio.volume = 0.0;
+		this.audio_static = new Audio();
+		this.audio_static.src = "data/radio/static.mp3";
+		this.audio_static.loop = true;
+		this.audio_static.autoplay = false;
+		this.audio_static.volume = 0.0;
+		this.audio_morse = new Audio();
+		this.audio_morse.src = "data/radio/morse.mp3";
+		this.audio_morse.loop = true;
+		this.audio_morse.autoplay = false;
+		this.audio_morse.volume = 0.0;
 	},
 	
 	//when starting to show this game
 	onEnter: function()
 	{
-		this.audio.play();
+		this.audio_static.play();
+		this.audio_morse.play();
 	},
 	
 	//when ending showing this game
 	onLeave: function()
 	{
-		this.audio.pause();
+		this.audio_static.pause();
+		this.audio_morse.pause();
 	},
 	
 	
@@ -48,7 +54,9 @@ var GameRadio = {
 		//reset game state
 		this.state.time = 0;
 		this.state.win = -1;
-		this.state.blips.length = 0;
+		this.state.freq = 100;
+		this.state.accuracy = 0;
+		this.state.solution =  Math.random() * 40 + 10;
 	},
 	
 	//render one frame, DO NOT MODIFY STATE
