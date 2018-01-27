@@ -52,10 +52,22 @@ var PLAYSTAGE = {
 		this.game.state.time = ( getTime() - this.game.start_time ) * 0.001;
 		if( this.game.onUpdate )
 			this.game.onUpdate(dt);
+		this.game.state.mousebutton_was_pressed = false;
 	},
 	
 	onMouse: function(e)
 	{
+		if(e.type == "mousedown")
+		{
+			this.game.state.mousedown = true;
+			this.game.state.mousebutton_was_pressed = true;
+		}
+		else 
+		{
+			if(e.type == "mouseup")
+				this.game.state.mousedown = false;
+		}
+	
 		e.posx = e.mousex / ( 2 ) - this.screen.x;
 		e.posy = e.mousey / ( 2 ) - this.screen.y;
 		e.posx /= this.screen.scale;
