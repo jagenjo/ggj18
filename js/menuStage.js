@@ -16,12 +16,15 @@ var MENUSTAGE = {
 		
 		ctx.fillStyle = "white";
 		var y = 30;
-		ctx.font = "14px pixel";
+		ctx.font = "16px pixel";
+		ctx.fillText( "SELECT GAME", 10, y );
+		y += 30;
+	
 		for(var i = 0; i < GAMES.games.length; ++i )
 		{
 			var game = GAMES.games[i];
-			ctx.fillText( (this.selected == i ? "> " : "") + game.name.toUpperCase(), 10, y );
-			y += 20;
+			ctx.fillText( (this.selected == i ? "] " : "") + game.name.toUpperCase(), 20, y );
+			y += 24;
 		}
 	},
 	
@@ -39,7 +42,19 @@ var MENUSTAGE = {
 	
 	onMouse: function( e )
 	{
+		return;
 		
+		var i = Math.floor((e.posy - 20) / 24);
+		if( e.type == "mousedown" )
+		{
+			var game = GAMES.games[i];
+			if(game)
+				this.selectGame(game);
+		}
+		else if( e.type == "mousemove" )
+		{
+			this.selected = i;
+		}
 	},
 	
 	onKey: function( e )
