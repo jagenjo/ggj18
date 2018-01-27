@@ -49,7 +49,7 @@ var PLAYSTAGE = {
 
 		ctx.fillStyle = "white";
 		ctx.font = "8px pixel";
-		ctx.fillText(" playing " + this.game.name, 0,10 );	
+		ctx.fillText(" playing " + this.game.name + " " + NETWORK.id, 0,10 );	
 	},
 	
 	onUpdate: function( dt )

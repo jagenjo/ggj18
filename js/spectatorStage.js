@@ -38,13 +38,14 @@ var SPECTATORSTAGE = {
 	{
 		var ctx = canvas.getContext("2d");
 	
-		if( this.spectating_author == -1 )
+		if( this.spectating_author == -1 || !this.game )
 		{
 			//draw noise
 			ctx.fillStyle = "white";
 			ctx.font = "16px pixel";
 			ctx.textAlign = "center";
-			ctx.fillText(" NO SIGNAL... ", canvas.width * 0.5, canvas.height * 0.5 );	
+			var msg = this.bad_version ? (" BAD VERSION " + this.spectating_author ) : " NO SIGNAL... ";
+			ctx.fillText(msg, canvas.width * 0.5, canvas.height * 0.5 );	
 			ctx.textAlign = "left";
 			return;
 		}
@@ -60,7 +61,7 @@ var SPECTATORSTAGE = {
 
 		ctx.fillStyle = "white";
 		ctx.font = "8px pixel";
-		ctx.fillText(" spectating " + this.spectating_author, 0,10 );	
+		ctx.fillText(" spectating " + this.spectating_author + "["+this.users.length+"]", 0,10 );	
 	},
 	
 	onUpdate: function( dt )
@@ -78,6 +79,15 @@ var SPECTATORSTAGE = {
 	{
 		if( this.spectating_author == -1 )
 			this.spectating_author = author_id;
+
+		//control new users and leaves			
+		if( data.type == "game_state")
+		{
+			if(!this.users_by_id[ author_id ])
+				this.onNewUser( author_id, data );	
+		}
+		if( data.type == "game_left" )
+			this.onUserLeave( author_id );
 			
 		if( this.spectating_author != author_id )
 			return;
@@ -88,25 +98,11 @@ var SPECTATORSTAGE = {
 				GAMES.playSound( data.filename, data.volume, true, true );
 			return;
 		}			
-		else if( data.type == "game_left" )
-		{
-			this.spectating_author = -1;
-
-			//remove			
-			var user = this.users_by_id[ author_id ];
-			var index = this.users.indexOf( user );
-			if( index != -1 )
-				this.users.splice( index, 1 );
-			delete this.users_by_id[ author_id ];
-			return;
-		}
 			
 		if( data.type == "game_state")
 		{
-			if(!this.users_by_id[ author_id ])
-				this.onNewUser( author_id, data );	
-				
 			this.users_by_id[ author_id ].last_data = data;
+			this.bad_version = false;
 		
 			//search game
 			var game = GAMES.gameClasses[ data.game_name ];
@@ -128,6 +124,8 @@ var SPECTATORSTAGE = {
 			}
 			else //game not found
 			{
+				if( game && game.version != data.version )
+					this.bad_version = true;
 				if(this.game)
 				{
 					if( this.game.onLeave )
@@ -148,6 +146,18 @@ var SPECTATORSTAGE = {
 		this.users_by_id[ author_id ] = user;
 	},
 	
+	onUserLeave: function( author_id )
+	{
+		if( this.spectating_author == author_id )
+			this.spectating_author = -1;
+		//remove			
+		var user = this.users_by_id[ author_id ];
+		var index = this.users.indexOf( user );
+		if( index != -1 )
+			this.users.splice( index, 1 );
+		delete this.users_by_id[ author_id ];
+	},
+	
 	onClientConnected: function( author_id )
 	{
 	},
@@ -155,16 +165,28 @@ var SPECTATORSTAGE = {
 	onClientDisconnected: function( author_id )
 	{
 		console.log("author leave");
-		if( this.spectating_author == author_id )
-			this.spectating_author = -1;
+		this.onUserLeave( author_id );
 	},
 	
 	nextClient: function()
 	{
+		if( this.users.length <= 1 ) //nothing to do
+			return;
+			
 		if( this.spectating_author == - 1)
 		{
-			
+			this.spectating_author = this.users[0].id;
+			return;
 		}
+		
+		var user = this.users_by_id[ this.spectating_author ];
+		if(!user)
+			return;
+		var index = this.users.indexOf( user );
+		index = (index + 1) % this.users.length;
+		user = this.users[ index ];
+		if(user)
+			this.spectating_author = user.id;
 	},
 	
 	onMouse: function(e)
@@ -180,6 +202,7 @@ var SPECTATORSTAGE = {
 				case 27: APP.changeStage( MENUSTAGE ); return; break;
 				case 90: GAMES.saveGameState(); return; break;
 				case 88: GAMES.loadGameState(); return; break;
+				case 32: this.nextClient(); return; break;
 				default:
 			}
 		}		
