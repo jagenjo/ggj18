@@ -86,7 +86,7 @@ var GameOutrun = {
 		ctx.drawImage( APP.assets["data/outrun/fondo.png"], 0, 0 );
 		ctx.save();
 		ctx.beginPath();
-		ctx.rect(4, 60, 246, 121);
+		ctx.rect(4, 40, 246, 141);
 		ctx.clip();
 		this.drawRoad(ctx, 100, 224);
 		ctx.drawImage( APP.assets["data/outrun/police.png"], this.state.police + 80, 100 );
@@ -109,9 +109,9 @@ var GameOutrun = {
 			ctx.textAlign = "center";
 			ctx.font = "16px pixel";
 			ctx.fillStyle = "black";
-			ctx.fillText( "WINNER!!", canvas.width * 0.5 + Math.random()*2-1, canvas.height * 0.5 + Math.random()*2-1 );
+			ctx.fillText( "WINNER!!", canvas.width * 0.5 + Math.random()*2-1, canvas.height * 0.3 + Math.random()*2-1 );
 			ctx.fillStyle = "white";
-			ctx.fillText( "WINNER!!", canvas.width * 0.5 + Math.random()*2-1, canvas.height * 0.5 + Math.random()*2-1 );
+			ctx.fillText( "WINNER!!", canvas.width * 0.5 + Math.random()*2-1, canvas.height * 0.3 + Math.random()*2-1 );
 			ctx.textAlign = "left";
 		}
 		
