@@ -3,16 +3,17 @@ var GameRadio = {
 	name: "radio",
 	version: 0.1,
 	
-	scale: 5,
-	to_load: [], //urls of images and sounds to load
+	scale: 1,
+	to_load: ["data/radio/radio_bg.png","data/radio/radio_fg.png","data/radio/radio_led.png"],
 	
 	//ALL GAME STATE SHOULD BE HERE, DO NOT STORE WEIRD STUFF LIKE IMAGES, DOM, ETC
 	//GAME STATE IS SENT TO SERVER EVERY FRAME so keep it light
 	state: {
 		time: 0, //time since game started
-		win: -1,
+		win_time: -1,
 		freq: 90,
 		accuracy: 0,
+		solved: 0,
 		solution: 30
 	},
 
@@ -25,7 +26,7 @@ var GameRadio = {
 		this.audio_static.autoplay = false;
 		this.audio_static.volume = 0.0;
 		this.audio_morse = new Audio();
-		this.audio_morse.src = "data/radio/morse.mp3";
+		this.audio_morse.src = "data/radio/mayday.mp3";
 		this.audio_morse.loop = true;
 		this.audio_morse.autoplay = false;
 		this.audio_morse.volume = 0.0;
@@ -53,8 +54,9 @@ var GameRadio = {
 	{
 		//reset game state
 		this.state.time = 0;
-		this.state.win = -1;
+		this.state.win_time = -1;
 		this.state.freq = 100;
+		this.state.solved = 0;
 		this.state.accuracy = 0;
 		this.state.solution =  Math.random() * 40 + 10;
 	},
@@ -63,23 +65,35 @@ var GameRadio = {
 	onRender: function( canvas )
 	{
 		var ctx = canvas.getContext("2d");
-		ctx.fillStyle = "black";
-		ctx.fillRect( 0,0, canvas.width, canvas.height );
-		ctx.strokeStyle = "cyan";
-		for(var i = 0; i < this.state.blips.length; ++i)
-		{
-			var blip = 	this.state.blips[i];
-			ctx.globalAlpha = Math.max(0, 1.0 - (this.state.time - blip.time) * 0.5 );
-			ctx.circle( blip.x, blip.y, (this.state.time - blip.time) * 10 );
-			ctx.stroke();
-		}
+		
+		ctx.drawImage( APP.assets["data/radio/radio_bg.png"],0,0);
+		
+		ctx.save();
+		ctx.translate(118,157);
+		ctx.rotate( this.state.freq * DEG2RAD );
+		ctx.strokeStyle = "black";
+		ctx.lineWidth = 2;
+		ctx.beginPath();
+		ctx.moveTo(0,0);
+		ctx.lineTo(-200,0);
+		ctx.stroke();
+		ctx.restore();
+		
+		ctx.drawImage( APP.assets["data/radio/radio_fg.png"],0,0);
+		
+		ctx.globalAlpha = ( this.state.accuracy < 0.8 ? this.state.accuracy : 1.0 ) * 0.8 + Math.random() * 0.2 * this.state.accuracy;
+		ctx.drawImage( APP.assets["data/radio/radio_led.png"],0,0);
 		ctx.globalAlpha = 1;
 		
-		if(this.state.win > 0 )
+		ctx.fillStyle = "cyan";
+		ctx.fillText( this.state.freq.toFixed(1) + " - " + this.state.solution.toFixed(1), 30,30 );
+		
+		if(this.state.win_time > 0 )
 		{
+			ctx.font = "32px pixel";
 			ctx.textAlign = "center";
 			ctx.fillStyle = "gray";
-			ctx.fillText( "WINNER!!", canvas.width * 0.5 + Math.random()*2-1, canvas.height * 0.5 + Math.random()*2-1 );
+			ctx.fillText( "WINNER!!", canvas.width * 0.5 + Math.random()*4-2, canvas.height * 0.5 + Math.random()*4-2 );
 			ctx.fillStyle = "white";
 			ctx.fillText( "WINNER!!", canvas.width * 0.5 + Math.random()*2-1, canvas.height * 0.5 + Math.random()*2-1 );
 			ctx.textAlign = "left";
@@ -91,20 +105,30 @@ var GameRadio = {
 	//ONLY USE INPUT_STATE TO COMPUTE NEW GAME_STATE
 	onUpdate: function( dt )
 	{
-		this.state.volume = Math.max( 0, this.state.volume - dt );
-		this.audio.volume = this.state.volume;
-		if( this.state.win != -1 && ( this.state.win + 2 ) < this.state.time && this.state.time > 2)
+		this.state.accuracy = Math.max( 0, 1.0 - Math.abs( this.state.freq - this.state.solution ) / 10 );
+		this.state.accuracy = Math.clamp( this.state.accuracy, 0, 1);
+		this.audio_static.volume = (1.0 - this.state.accuracy) * 0.5;
+		this.audio_morse.volume = this.state.accuracy * 0.5;
+		
+		if( this.state.accuracy > 0.8 )
+			this.state.solved += dt * 0.5;
+		else
+			this.state.solved = Math.max(0, this.state.solved - dt*0.5);
+
+		if( this.state.win_time == -1 && this.state.solved > 1.0 )
+			this.state.win_time = this.state.time;
+		
+	
+		if( this.state.win_time != -1 && ( this.state.win_time + 2 ) < this.state.time && this.state.time > 2)
 			GAMES.playerWin();
 	},
 	
 	onMouse: function( e )
 	{
-		if(e.type == "mousedown" )
+		if(e.type == "mousemove" && e.dragging )
 		{
-			this.state.blips.push( { x: e.posx, y: e.posy, time: this.state.time } );
-			if( this.state.win == -1 && this.state.blips.length > 4 )
-				this.state.win = this.state.time;
-			GAMES.playSound("data/sounds/water.wav",0.5);
+			this.state.freq += (e.deltax) * 0.1;
+			this.state.freq = Math.clamp( this.state.freq, 0, 180 );
 		}
 	}
 };

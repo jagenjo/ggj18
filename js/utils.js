@@ -26,3 +26,4 @@ CanvasRenderingContext2D.prototype.drawImageCentered = function( img, x,y,s,r )
 	this.restore();
 }
 
+var DEG2RAD = 0.0174533;

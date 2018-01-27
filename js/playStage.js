@@ -87,8 +87,9 @@ var PLAYSTAGE = {
 		e.posy = e.mousey / ( 2 ) - this.screen.y;
 		e.posx /= this.screen.scale;
 		e.posy /= this.screen.scale;
-		if( e.posx >= 0 && e.posx < this.screen.width &&
-			e.posy >= 0 && e.posy < this.screen.height )
+		if( e.type == "mousemove" || 
+			(e.posx >= 0 && e.posx < this.screen.width &&
+			e.posy >= 0 && e.posy < this.screen.height) )
 		{
 			if( this.game.onMouse )
 				this.game.onMouse(e);

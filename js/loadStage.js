@@ -21,8 +21,6 @@ var LOADSTAGE = {
 		for(var i in GAMES.gameClasses )
 		{
 			var game = GAMES.gameClasses[i];
-			if(game.onInit)
-				game.onInit();
 			if(game.to_load)
 				to_load = to_load.concat( game.to_load );
 		}
