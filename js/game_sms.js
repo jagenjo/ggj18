@@ -128,7 +128,7 @@ var GameSMS = {
 			this.restart();
 		}else if(this.state.win_time < 0 && this.state.fail < 0 && this.state.lastpress + 0.5 < this.state.time){
 			var r = this.state.res + this.state.resl;
-			if(r.length == this.state.sms.length){
+			if(r.length >= this.state.sms.length){
 				if(r == this.state.sms){
 					this.state.win_time = this.state.time;
 					GAMES.playSound("data/win1.wav", 0.5);
