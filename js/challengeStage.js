@@ -33,6 +33,7 @@ var CHALLENGESTAGE = {
 		NETWORK.sendEvent({ type: "player_join" });
 		this.player_ids.length = 0;
 		this.level = 0;
+		this.winner = false;
 	},
 	
 	onLeave: function()
@@ -54,6 +55,13 @@ var CHALLENGESTAGE = {
 		var msg = "waiting for server...";
 		if(this.player_ids.length)
 			msg = "players connected: " + this.player_ids.length;
+		if(this.game_state == 2)
+		{
+			if( this.winner )
+				msg = "YOU WON!!";
+			else
+				msg = "MATCH ENDED";
+		}
 			
 		ctx.fillStyle = "white";
 		ctx.font = "16px pixel";
@@ -110,6 +118,7 @@ var CHALLENGESTAGE = {
 		{
 			NETWORK.sendEvent({ type: "player_won" }, this.server_id );
 			this.game_state = 2;
+			this.winner = true;
 			return;
 		}
 		

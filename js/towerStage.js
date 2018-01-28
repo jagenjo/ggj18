@@ -8,6 +8,9 @@ var TOWERSTAGE = {
 	spectating_author: -1,
 	state: 0, //waiting
 	state_time: 0,
+	winner_id: -1,
+	
+	zoom_tv: false,
 	
 	players: [],
 	players_by_id: {},
@@ -42,6 +45,7 @@ var TOWERSTAGE = {
 		
 		this.players.length = 0;
 		this.players_by_id = {};
+		this.winner_id = -1;
 		
 		if(this.game && this.game.onEnter)
 			this.game.onEnter();
@@ -63,10 +67,19 @@ var TOWERSTAGE = {
 		ctx.drawImage( APP.assets[ "data/background_skyline.png" ], 0, 0 );
 		ctx.drawImage( APP.assets[ "data/tower/background_tower.png" ], 0, -600 );
 		
+		ctx.save();
+		if( this.zoom_tv )
+			ctx.scale(2,2);
 		this.renderTV(ctx);
+		ctx.restore();
 
 		ctx.fillStyle = "white";
 		ctx.font = "16px pixel";
+		
+		if( this.zoom_tv )
+		{
+			return;
+		}
 
 		if(this.state == 0)
 		{
@@ -81,6 +94,16 @@ var TOWERSTAGE = {
 		else if(this.state == 1)
 		{
 			ctx.fillText( "PLAYING" , 40, this.screen.y + this.screen.height + 70 );	
+		}
+		else if(this.state == 2)
+		{
+			ctx.fillStyle = "black";
+			ctx.fillRect( 0, canvas.height * 0.5 - 100, canvas.width, 200 );
+			ctx.textAlign = "center";
+			ctx.fillStyle = "white";
+			ctx.fillText( "GAME ENDED", 40, canvas.width * 0.5, canvas.height * 0.5 - 50 );	
+			ctx.fillText( "USER " + this.winner_id + " WON", 40, canvas.width * 0.5, canvas.height * 0.5 + 50 );	
+			ctx.textAlign = "left";
 		}
 
 		ctx.fillStyle = "white";
@@ -127,9 +150,9 @@ var TOWERSTAGE = {
 	
 	onServerMessage: function(author_id, data)
 	{
-		//follow the first one
-		//if( this.spectating_author == -1 )
-		//	this.spectating_author = author_id;
+		//follow the first one to stream
+		if( this.spectating_author == -1 && data.type == "game_state" && this.players_by_id[ author_id ] )
+			this.spectating_author = author_id;
 						
 		if( this.spectating_author == author_id )
 			this.onSpectatingMessage( author_id, data );
@@ -142,6 +165,11 @@ var TOWERSTAGE = {
 		else if( data.type == "player_left")
 		{
 			this.removePlayer( author_id );
+		}
+		else if( data.type == "player_won")
+		{
+			this.state = 2;
+			this.winner_id = author_id;
 		}
 		else if( data.type == "game_completed")
 		{
@@ -163,9 +191,13 @@ var TOWERSTAGE = {
 			return;
 		}			
 			
-		if( data.type == "game_state")
+		if( data.type == "game_state" )
 		{
 			this.bad_version = false;
+			
+			var player = this.players_by_id[ author_id ];
+			player.last_data = data;
+			player.game_name = data.game_name;
 		
 			//search game
 			var game = GAMES.gameClasses[ data.game_name ];
@@ -264,22 +296,23 @@ var TOWERSTAGE = {
 	
 	nextClient: function()
 	{
-		if( NETWORK.users.length <= 1 ) //nothing to do
+		if( this.players.length <= 1 ) //nothing to do
 			return;
 			
 		if( this.spectating_author == - 1)
 		{
-			this.spectating_author = NETWORK.users[0].id;
+			this.spectating_author = this.players[0].id;
 			return;
 		}
 		
-		var user = NETWORK.users_by_id[ this.spectating_author ];
+		var user = this.players[ this.spectating_author ];
 		if(!user)
 			return;
-		var index = NETWORK.users.indexOf( user );
-		index = (index + 1) % NETWORK.users.length;
-		user = NETWORK.users[ index ];
-		if(user)
+			
+		var index = this.players.indexOf( user );
+		index = (index + 1) % this.players.length;
+		user = this.players[ index ];
+		if(user && user.last_data)
 		{
 			var game = GAMES.gameClasses[ user.last_data.game_name ];
 			if( game.version == user.last_data.version )
@@ -289,10 +322,14 @@ var TOWERSTAGE = {
 			else
 				this.game = null;
 		}
+		else
+			this.spectating_author = -1;
 	},
 	
 	onMouse: function(e)
 	{
+		if(e.type == "mousedown")
+			this.zoom_tv = !this.zoom_tv;
 	},
 	
 	onKey: function(e)

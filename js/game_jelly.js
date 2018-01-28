@@ -95,7 +95,7 @@ var GameJelly = {
 		else //approach
 		{	
 			if( this.state.dead == -1 )
-				this.state.distance -= dt * 13;
+				this.state.distance -= dt * 15;
 		}
 		
 		if( this.state.dead != -1 && (this.state.dead + 2) < this.state.time ) //restart	
