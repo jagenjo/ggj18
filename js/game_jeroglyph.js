@@ -2,12 +2,14 @@
 //GAME.finish(score) //to finish
 
 var GameJeroglyph = {
-	version: 0.1,
+	version: 0.2,
 	name: "teacher",
 	scale: 2,
-	to_load: ["data/jeroglyph/blackboard.png", "data/jeroglyph/teacher_1.png", "data/jeroglyph/teacher_2.png", "data/jeroglyph/teacher_3.png", "data/jeroglyph/teacher_4.png", "data/jeroglyph/circle.png", "data/jeroglyph/rombo.png", "data/jeroglyph/square.png", "data/jeroglyph/triangle.png"], //urls of images and sounds to load
+	to_load: ["data/jeroglyph/blackboard.png", "data/jeroglyph/buttons.png", "data/jeroglyph/teacher_1.png", "data/jeroglyph/teacher_2.png", "data/jeroglyph/teacher_3.png", "data/jeroglyph/teacher_4.png", "data/jeroglyph/circle.png", "data/jeroglyph/rombo.png", "data/jeroglyph/square.png", "data/jeroglyph/triangle.png"], //urls of images and sounds to load
 	teacher: ["data/jeroglyph/teacher_1.png", "data/jeroglyph/teacher_2.png", "data/jeroglyph/teacher_3.png", "data/jeroglyph/teacher_4.png"],
-	glyphs: [],
+	glyphs: ["data/jeroglyph/circle.png", "data/jeroglyph/rombo.png", "data/jeroglyph/square.png", "data/jeroglyph/triangle.png"],
+	sequencelength: 4,
+	sequencetime: 4,
 
 	//ALL GAME STATE SHOULD BE HERE, DO NOT STORE WEIRD STUFF LIKE IMAGES, DOM, ETC
 	//GAME STATE IS SENT TO SERVER EVERY FRAME so keep it light
@@ -17,8 +19,10 @@ var GameJeroglyph = {
 		mousedown_when: 0,
 		mouseup_when: 0,
 		win_time: -1,
-		show_teaching: -1,
+		show_teaching: 0,
 		sequence: "",
+		sequenceProgress: 0,
+		fail: -1,
 	},
 
 	//called after loading all games, init stuff here
@@ -36,16 +40,19 @@ var GameJeroglyph = {
 
 	sequence: function(){
 		var s = "";
-		for(var i=0; i<10; i++){
+		for(var i=0; i<this.sequencelength; i++){
 			var r = Math.floor(Math.random()*4);
-			s += (r == 0 ? "c" : r == 1 ? "r" : r == 2 ? "t" : "s");
+			s += (r == 0 ? "c" : r == 1 ? "r" : r == 2 ? "s" : "t");
 		}
 		this.state.sequence = s;
+		this.state.sequenceProgress = 0;
 	},
 	
 	restart: function(){
 		this.state.win_time = -1;
 		this.sequence();
+		this.state.show_teaching = 0;
+		this.state.fail = -1;
 
 	},
 
@@ -56,7 +63,6 @@ var GameJeroglyph = {
 	{
 		//reset game state
 		this.state.time = 0;
-		this.state.wins = 0;
 		this.restart();
 	},
 	
@@ -67,29 +73,36 @@ var GameJeroglyph = {
 		var w = canvas.width;
 		var h = canvas.height;
 
-		ctx.fillStyle = "#676767";
+		ctx.fillStyle = this.state.fail > 0 ? "red" : "#676767";
 		ctx.fillRect(0,0,w,h);
 
 		ctx.fillStyle = "white";
 		ctx.font = "8px pixel";
-		ctx.fillText("Learn!:", 10, 20);
 
-		/*if(this.state.wins > 2 )
-		{
+		if(this.state.show_teaching >= 0){
+			ctx.drawImage(APP.assets["data/jeroglyph/blackboard.png"],0,0);
+			ctx.fillText("Learn!:", 10, 20);
+			var t = Math.floor((2+this.state.sequence.length) * this.state.show_teaching);
+			var d = ((2+this.state.sequence.length) * this.state.show_teaching) % 1;
+
+			ctx.drawImage(APP.assets[this.teacher[t < 2 ? t : t % 2 + 2]],0,0);
+			if(t > 1 && d > 0.2)
+				ctx.drawImage(APP.assets[this.glyphs[this.state.sequence[t-2] == "c" ? 0 : this.state.sequence[t-2] == "r" ? 1 : this.state.sequence[t-2] == "s" ? 2 : 3]],0,10);
+		}else if(this.state.win_time > 0){
+			var t = Math.floor(8*this.state.time);
+			ctx.drawImage(APP.assets[this.teacher[t%4]],0,0);
+		}else{
+			ctx.drawImage(APP.assets["data/jeroglyph/buttons.png"],0,0);
+			ctx.fillText("Remember!:", 10, 20);
+		}
+
+		if(this.state.win_time > 0){
 			ctx.textAlign = "center";
 			ctx.font = "16px pixel";
 			ctx.fillStyle = "black";
 			ctx.fillText( "WINNER!!", canvas.width * 0.5 + Math.random()*2-1, canvas.height * 0.5 + Math.random()*2-1 );
 			ctx.fillStyle = "white";
 			ctx.fillText( "WINNER!!", canvas.width * 0.5 + Math.random()*2-1, canvas.height * 0.5 + Math.random()*2-1 );
-			ctx.textAlign = "left";
-		}else */if(this.state.win_time > 0){
-			ctx.textAlign = "center";
-			ctx.font = "16px pixel";
-			ctx.fillStyle = "black";
-			ctx.fillText( "HIT!!", canvas.width * 0.5 + Math.random()*2-1, canvas.height * 0.5 + Math.random()*2-1 );
-			ctx.fillStyle = "white";
-			ctx.fillText( "HIT!!", canvas.width * 0.5 + Math.random()*2-1, canvas.height * 0.5 + Math.random()*2-1 );
 			ctx.textAlign = "left";
 		}
 	},
@@ -98,13 +111,48 @@ var GameJeroglyph = {
 	//ONLY USE INPUT_STATE TO COMPUTE NEW GAME_STATE
 	onUpdate: function( dt )
 	{
+		if(this.state.fail >= 0){
+			this.state.fail += dt;
+			if(this.state.fail > 0.3) this.restart();
+		}
 
+		if(this.state.show_teaching >= 0){
+			this.state.show_teaching += (1/this.sequencetime)*dt;
+			if(this.state.show_teaching > 1) this.state.show_teaching = -1;
+		}
+
+		if(this.state.win_time > 0 && this.state.win_time + 2 < this.state.time){
+			GAMES.playerWin();
+			return;
+		}
 	},
 	
 	onMouse: function( e )
 	{
-		if(e.type == "mousedown" && this.state.win_time < 0){
+		if(e.type == "mousedown" && this.state.win_time < 0 && this.state.show_teaching < 0 && this.state.fail < 0){
+			var g;
+			if(e.posx > 12 && e.posx < 56 && e.posy > 32 && e.posy < 68){
+				g = "c";
+			}else if(e.posx > 72 && e.posx < 116 && e.posy > 32 && e.posy < 68){
+				g = "r";
+			}else if(e.posx > 12 && e.posx < 56 && e.posy > 72 && e.posy < 108){
+				g = "s";
+			}else if(e.posx > 72 && e.posx < 116 && e.posy > 72 && e.posy < 108){
+				g = "t";
+			}
 
+			if(g){
+				if(this.state.sequence[this.state.sequenceProgress] == g){
+					this.state.sequenceProgress += 1;
+					if(this.state.sequenceProgress == this.state.sequence.length){
+						//WIN!
+						this.state.win_time = this.state.time;
+						GAMES.playSound("data/win1.wav", 0.5);
+					}
+				}else{
+					this.state.fail = 0;
+				}
+			}
 		}
 	},
 

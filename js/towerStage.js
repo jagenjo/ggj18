@@ -1,7 +1,7 @@
 var TOWERSTAGE = {
 	name: "tower",
 
-	to_load: ["data/background.png", "data/tower/tv.png"],
+	to_load: ["data/background_skyline.png", "data/tower/tv.png", "data/tower/background_tower.png" ],
 	game: null,
 	game_canvas: null,
 	
@@ -45,7 +45,12 @@ var TOWERSTAGE = {
 	{
 		var ctx = canvas.getContext("2d");
 		
-		ctx.drawImage( APP.assets[ "data/background.png" ], 0, 0 );
+		ctx.drawImage( APP.assets[ "data/background_skyline.png" ], 0, 0 );
+		ctx.drawImage( APP.assets[ "data/tower/background_tower.png" ], 0, -600 );
+		
+		
+		ctx.fillStyle = "black";
+		ctx.fillRect( this.screen.x - 8, this.screen.y - 8, this.screen.width + 16, this.screen.height + 16);  
 	
 		if( this.spectating_author == -1 || !this.game )
 		{

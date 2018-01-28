@@ -26,4 +26,14 @@ CanvasRenderingContext2D.prototype.drawImageCentered = function( img, x,y,s,r )
 	this.restore();
 }
 
+CanvasRenderingContext2D.prototype.drawSprite = function( img, x,y, num, size )
+{
+	num = Math.floor(num);
+	var frames = img.width / size;
+	var ix = num % frames;
+	var iy = Math.floor( num / frames );
+	this.drawImage( img, ix * size, iy * size, size, size, x,y, size, size ); 
+}
+
+
 var DEG2RAD = 0.0174533;

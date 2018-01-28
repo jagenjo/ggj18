@@ -2,11 +2,11 @@
 //GAMES.playerWin(score) //to finish
 
 var GameExample = {
-	name: "test",
-	version: 0.1,
+	name: "waves",
+	version: 0.2,
 	
 	scale: 5,
-	to_load: [], //urls of images and sounds to load
+	to_load: ["data/waves/caustics.png"], //urls of images and sounds to load
 	
 	//ALL GAME STATE SHOULD BE HERE, DO NOT STORE WEIRD STUFF LIKE IMAGES, DOM, ETC
 	//GAME STATE IS SENT TO SERVER EVERY FRAME so keep it light
@@ -15,7 +15,7 @@ var GameExample = {
 		mousedown: false,
 		mousedown_was_pressed: false,
 		blips: [],
-		win: -1,
+		win_time: -1,
 		volume: 0.0
 	},
 
@@ -49,7 +49,7 @@ var GameExample = {
 	{
 		//reset game state
 		this.state.time = 0;
-		this.state.win = -1;
+		this.state.win_time = -1;
 		this.state.blips.length = 0;
 	},
 	
@@ -57,19 +57,34 @@ var GameExample = {
 	onRender: function( canvas )
 	{
 		var ctx = canvas.getContext("2d");
-		ctx.fillStyle = "black";
+		ctx.fillStyle = "#2b4c6e";
 		ctx.fillRect( 0,0, canvas.width, canvas.height );
-		ctx.strokeStyle = "cyan";
+
+		ctx.globalAlpha = 0.1;		
+		ctx.drawImage( APP.assets["data/waves/caustics.png"], Math.sin( this.state.time ), 0 );
+		ctx.globalAlpha = 1;		
+		
+		ctx.strokeStyle = "black";
 		for(var i = 0; i < this.state.blips.length; ++i)
 		{
 			var blip = 	this.state.blips[i];
-			ctx.globalAlpha = Math.max(0, 1.0 - (this.state.time - blip.time) * 0.5 );
+			ctx.globalAlpha = 0.5 * Math.max(0, 1.0 - (this.state.time - blip.time) * 0.5 );
 			ctx.circle( blip.x, blip.y, (this.state.time - blip.time) * 10 );
 			ctx.stroke();
 		}
+		
+		ctx.strokeStyle = "#AEF";
+		for(var i = 0; i < this.state.blips.length; ++i)
+		{
+			var blip = 	this.state.blips[i];
+			ctx.globalAlpha = 0.75 * Math.max(0, 1.0 - (this.state.time - blip.time) * 0.5 );
+			ctx.circle( blip.x+1, blip.y, (this.state.time - blip.time) * 10 );
+			ctx.stroke();
+		}
+		
 		ctx.globalAlpha = 1;
 		
-		if(this.state.win > 0 )
+		if(this.state.win_time > 0 )
 		{
 			ctx.textAlign = "center";
 			ctx.fillStyle = "gray";
@@ -78,6 +93,12 @@ var GameExample = {
 			ctx.fillText( "WINNER!!", canvas.width * 0.5 + Math.random()*2-1, canvas.height * 0.5 + Math.random()*2-1 );
 			ctx.textAlign = "left";
 		} 
+		else
+		{
+			ctx.textAlign = "center";
+			ctx.fillStyle = "#AEF";
+			ctx.fillText( "CLICK!", canvas.width * 0.5, canvas.height * 0.25 );
+		}
 		
 	},
 
@@ -87,7 +108,7 @@ var GameExample = {
 	{
 		this.state.volume = Math.max( 0, this.state.volume - dt );
 		this.audio.volume = this.state.volume;
-		if( this.state.win != -1 && ( this.state.win + 2 ) < this.state.time && this.state.time > 2)
+		if( this.state.win_time != -1 && ( this.state.win_time + 2 ) < this.state.time && this.state.time > 2)
 			GAMES.playerWin();
 	},
 	
@@ -96,8 +117,8 @@ var GameExample = {
 		if(e.type == "mousedown" )
 		{
 			this.state.blips.push( { x: e.posx, y: e.posy, time: this.state.time } );
-			if( this.state.win == -1 && this.state.blips.length > 4 )
-				this.state.win = this.state.time;
+			if( this.state.win_time == -1 && this.state.blips.length > 4 )
+				this.state.win_time = this.state.time;
 			GAMES.playSound("data/sounds/water.wav",0.5);
 		}
 	}
