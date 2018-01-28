@@ -84,6 +84,9 @@ var GameJeroglyph = {
 			ctx.drawImage(APP.assets[this.teacher[t < 2 ? t : t % 2 + 2]],0,0);
 			if(t > 1 && d > 0.2)
 				ctx.drawImage(APP.assets[this.glyphs[this.state.sequence[t-2] == "c" ? 0 : this.state.sequence[t-2] == "r" ? 1 : this.state.sequence[t-2] == "s" ? 2 : 3]],0,10);
+		}else if(this.state.win_time > 0){
+			var t = Math.floor(8*this.state.time);
+			ctx.drawImage(APP.assets[this.teacher[t%4]],0,0);
 		}else{
 			ctx.drawImage(APP.assets["data/jeroglyph/buttons.png"],0,0);
 			ctx.fillText("Remember!:", 10, 20);
