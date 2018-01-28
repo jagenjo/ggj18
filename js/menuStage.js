@@ -84,6 +84,8 @@ var MENUSTAGE = {
 				this.selected--;
 			if(e.keyCode == 40 )
 				this.selected++;
+			if(e.keyCode == 27 )
+				APP.changeStage( INTROSTAGE );
 			if(e.keyCode == 13 )
 				this.selectOption( this.options[ this.selected ] );
 			this.selected = Math.clamp( this.selected, 0, this.options.length - 1 );

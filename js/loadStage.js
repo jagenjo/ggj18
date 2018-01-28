@@ -33,7 +33,7 @@ var LOADSTAGE = {
 	
 	ready: function()
 	{
-		APP.changeStage( MENUSTAGE );
+		APP.changeStage( INTROSTAGE );
 	},
 	
 	onRender: function( canvas )

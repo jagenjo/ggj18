@@ -101,8 +101,8 @@ var TOWERSTAGE = {
 			ctx.fillRect( 0, canvas.height * 0.5 - 100, canvas.width, 200 );
 			ctx.textAlign = "center";
 			ctx.fillStyle = "white";
-			ctx.fillText( "GAME ENDED", 40, canvas.width * 0.5, canvas.height * 0.5 - 50 );	
-			ctx.fillText( "USER " + this.winner_id + " WON", 40, canvas.width * 0.5, canvas.height * 0.5 + 50 );	
+			ctx.fillText( "GAME ENDED", canvas.width * 0.5, canvas.height * 0.5 - 50 );	
+			ctx.fillText( "USER " + this.winner_id + " WON", canvas.width * 0.5, canvas.height * 0.5 + 50 );	
 			ctx.textAlign = "left";
 		}
 
@@ -168,8 +168,7 @@ var TOWERSTAGE = {
 		}
 		else if( data.type == "player_won")
 		{
-			this.state = 2;
-			this.winner_id = author_id;
+			this.onPlayerWon( author_id );
 		}
 		else if( data.type == "game_completed")
 		{
@@ -247,6 +246,12 @@ var TOWERSTAGE = {
 	{
 		this.broadcast({ type:"match_start" });
 		this.state = 1;
+	},
+	
+	onPlayerWon: function( author_id )
+	{
+		this.state = 2;
+		this.winner_id = author_id;
 	},
 	
 	onBeforeUnload: function()
@@ -338,6 +343,7 @@ var TOWERSTAGE = {
 		{
 			switch( e.keyCode )
 			{
+				case 78: this.onPlayerWon( this.players.length ? this.players[0].id : 1 ); return; break;
 				case 27: APP.changeStage( MENUSTAGE ); return; break;
 				case 32:
 					if( this.state == 0 )
