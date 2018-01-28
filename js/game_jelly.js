@@ -1,6 +1,6 @@
 var GameJelly = {
 	name: "jelly",
-	version: 0.2,
+	version: 0.3,
 	
 	scale: 2,
 	to_load: ["data/jelly/jelly_background.png", "data/jelly/ggj17_player.png", "data/jelly/ggj17_jellyfish.png", "data/jelly/ggj17_referee.png"], //urls of images and sounds to load
@@ -11,8 +11,8 @@ var GameJelly = {
 		time: 0, //time since game started
 		mousedown: false,
 		mousedown_was_pressed: false,
-		waves: new Array(32),
 		distance: 70,
+		force: 0,
 		win_time: -1,
 		dead: -1
 	},
@@ -41,8 +41,7 @@ var GameJelly = {
 		this.state.time = 0;
 		this.state.win_time = -1;
 		this.state.distance = 70;
-		for(var i = 0; i < this.state.waves.length; ++i)
-			this.state.waves[i] = 0;
+		this.state.force = 0;
 	},
 	
 	//render one frame, DO NOT MODIFY STATE
@@ -56,6 +55,8 @@ var GameJelly = {
 		
 		if( this.state.dead != -1 )
 			ctx.drawSprite( APP.assets["data/jelly/ggj17_player.png"], 0,40, 8*4, 64 );
+		else if( this.state.force > 0.2 )
+			ctx.drawSprite( APP.assets["data/jelly/ggj17_player.png"], 0,40, 8*3+3.5+Math.random(), 64 );
 		else
 			ctx.drawSprite( APP.assets["data/jelly/ggj17_player.png"], 0,40, Math.random() * 10, 64 );
 
@@ -78,6 +79,7 @@ var GameJelly = {
 	//ONLY USE INPUT_STATE TO COMPUTE NEW GAME_STATE
 	onUpdate: function( dt )
 	{
+		this.state.force = Math.clamp( this.state.force - dt, 0, 1 );
 		if( this.state.win_time != -1 && ( this.state.win_time + 2 ) < this.state.time && this.state.time > 2)
 			GAMES.playerWin();
 		
@@ -109,6 +111,8 @@ var GameJelly = {
 		if(e.type == "mousedown" )
 		{
 			this.state.distance += 5;
+			this.state.force += 1;
+			
 			//if( this.state.win == -1 && this.state.blips.length > 4 )
 			//	this.state.win = this.state.time;
 			//GAMES.playSound("data/sounds/water.wav",0.5);

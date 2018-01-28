@@ -6,6 +6,12 @@ var TOWERSTAGE = {
 	game_canvas: null,
 	
 	spectating_author: -1,
+	state: 0, //waiting
+	state_time: 0,
+	
+	players: [],
+	players_by_id: {},
+	player_ids: [],
 	
 	screen: {
 		x: 32,
@@ -29,26 +35,61 @@ var TOWERSTAGE = {
 
 	onEnter: function()
 	{
+		APP.canvas.width = 800;
+		APP.canvas.height = 600;
 		NETWORK.requestSpectator();
 		NETWORK.listening_stage = this;
+		
+		this.players.length = 0;
+		this.players_by_id = {};
+		
 		if(this.game && this.game.onEnter)
 			this.game.onEnter();
 	},
 	
 	onLeave: function()
 	{
+		APP.canvas.width = 400;
+		APP.canvas.height = 300;
 		if(this.game && this.game.onLeave)
 			this.game.onLeave();
+		this.broadcast({ type:"match_canceled" });
 	},
 	
-	onRender: function( canvas )
+	onRender: function( canvas, ctx )
 	{
-		var ctx = canvas.getContext("2d");
+		//var ctx = canvas.getContext("2d");
 		
 		ctx.drawImage( APP.assets[ "data/background_skyline.png" ], 0, 0 );
 		ctx.drawImage( APP.assets[ "data/tower/background_tower.png" ], 0, -600 );
 		
-		
+		this.renderTV(ctx);
+
+		ctx.fillStyle = "white";
+		ctx.font = "16px pixel";
+
+		if(this.state == 0)
+		{
+			var msg = "Waiting players... ";
+			if( this.players.length > 0 )
+				msg = "Players online: " + this.players.length;
+			ctx.fillText( msg , 40, this.screen.y + this.screen.height + 70 );	
+			
+			if( this.players.length > 0 )
+				ctx.fillText( "press SPACE to start" , 40, this.screen.y + this.screen.height + 100 );	
+		}
+		else if(this.state == 1)
+		{
+			ctx.fillText( "PLAYING" , 40, this.screen.y + this.screen.height + 70 );	
+		}
+
+		ctx.fillStyle = "white";
+		ctx.font = "8px pixel";
+		//ctx.fillText(" spectating " + this.spectating_author + "["+NETWORK.users.length+"]", 0,10 );	
+	},
+	
+	renderTV: function(ctx)
+	{
 		ctx.fillStyle = "black";
 		ctx.fillRect( this.screen.x - 8, this.screen.y - 8, this.screen.width + 16, this.screen.height + 16);  
 	
@@ -70,11 +111,7 @@ var TOWERSTAGE = {
 			ctx.drawImage( game_canvas, this.screen.x, this.screen.y, this.screen.width, this.screen.height );
 		}
 		
-		ctx.drawImage( APP.assets[ "data/tower/tv.png" ], 0, 0 );
-
-		ctx.fillStyle = "white";
-		ctx.font = "8px pixel";
-		//ctx.fillText(" spectating " + this.spectating_author + "["+NETWORK.users.length+"]", 0,10 );	
+		ctx.drawImage( APP.assets[ "data/tower/tv.png" ], 0,0);
 	},
 	
 	onUpdate: function( dt )
@@ -90,13 +127,35 @@ var TOWERSTAGE = {
 	
 	onServerMessage: function(author_id, data)
 	{
-		if( this.spectating_author == -1 )
-			this.spectating_author = author_id;
+		//follow the first one
+		//if( this.spectating_author == -1 )
+		//	this.spectating_author = author_id;
+						
+		if( this.spectating_author == author_id )
+			this.onSpectatingMessage( author_id, data );
 
-			
-		if( this.spectating_author != author_id )
-			return;
-			
+		if( data.type == "player_join")
+		{
+			this.addPlayer( author_id, data );
+			this.broadcast( { type: "match_info", players: this.player_ids } );
+		}
+		else if( data.type == "player_left")
+		{
+			this.removePlayer( author_id );
+		}
+		else if( data.type == "game_completed")
+		{
+			var user = this.players_by_id[ author_id ];
+			if(user)
+			{
+				user.level += 1;
+				NETWORK.send( { type:"match_play", level: user.level }, author_id );
+			}
+		} 
+	},
+	
+	onSpectatingMessage: function( author_id, data )
+	{
 		if( data.type == "game_event")
 		{
 			if( data.action == "play_sound" )
@@ -142,16 +201,53 @@ var TOWERSTAGE = {
 	
 	onClientConnected: function( author_id )
 	{
+		//invite him
 	},
 	
 	onClientDisconnected: function( author_id )
 	{
 		console.log("author leave");
 		this.onUserLeave( author_id );
+		this.removePlayer( author_id );
+	},
+	
+	startMatch: function()
+	{
+		this.broadcast({ type:"match_start" });
+		this.state = 1;
+	},
+	
+	onBeforeUnload: function()
+	{
+		this.broadcast({ type:"match_canceled" });
+	},
+	
+	addPlayer: function( author_id, data )
+	{
+		var player = { 
+			id: Number(author_id), 
+			profile: data.profile,
+			score: 0,
+			level: 0
+		};
+		this.players.push( player );
+		this.players_by_id[ author_id ] = player;
+		this.player_ids.push( Number(author_id) );
+	},
+	
+	removePlayer: function( author_id )
+	{
+		var player = this.players_by_id[ author_id ];
+		if(player)
+		{
+			var index = this.players.indexOf( player );
+			this.players.splice( index, 1 );
+			this.player_ids.splice( index, 1 );
+		}
 	},
 	
 	onUserLeave: function( author_id )
-	{	
+	{
 		if( this.spectating_author == author_id )
 		{
 			this.spectating_author = -1;
@@ -159,6 +255,11 @@ var TOWERSTAGE = {
 				this.game.onLeave();
 			this.game = null;
 		}
+	},
+	
+	broadcast: function( msg )
+	{
+		NETWORK.send( msg, this.player_ids );
 	},
 	
 	nextClient: function()
@@ -200,7 +301,14 @@ var TOWERSTAGE = {
 		{
 			switch( e.keyCode )
 			{
-				case 32: this.nextClient(); return; break;
+				case 27: APP.changeStage( MENUSTAGE ); return; break;
+				case 32:
+					if( this.state == 0 )
+						this.startMatch();
+					else
+						this.nextClient();
+					return;
+					break;
 				default:
 			}
 		}		

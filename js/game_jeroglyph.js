@@ -93,7 +93,7 @@ var GameJeroglyph = {
 			ctx.drawImage(APP.assets[this.teacher[t%4]],0,0);
 		}else{
 			ctx.drawImage(APP.assets["data/jeroglyph/buttons.png"],0,0);
-			ctx.fillText("Remember!:", 10, 20);
+			ctx.fillText("Answer!:", 10, 20);
 		}
 
 		if(this.state.win_time > 0){

@@ -74,10 +74,18 @@ var GAMES = {
 		this.current_game.state = state;
 	},
 	
-	playerWin: function()
+	playerWin: function( score )
 	{
 		if( PLAYSTAGE.active )
-			APP.changeStage( MENUSTAGE );
+		{
+			if( PLAYSTAGE.onGameCompleted )
+			{
+				PLAYSTAGE.onGameCompleted( score );
+				PLAYSTAGE.onGameCompleted = null;
+			}
+			else
+				APP.changeStage( PLAYSTAGE.exit_stage || TRAININGSTAGE );
+		}
 	},
 	
 	playSound: function( filename, volume, skip_send, force_play )

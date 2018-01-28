@@ -49,9 +49,9 @@ var NETWORK = {
 				this.send( msg, this.spectator_id );
 	},
 	
-	sendEvent: function( event )
+	sendEvent: function( event, target_id )
 	{
-		this.send( event );
+		this.send( event, target_id );
 	},
 	
 	onReady: function(id)
@@ -112,10 +112,10 @@ var NETWORK = {
 		},2000);
 	},
 	
-	send: function( msg, spectator_id )
+	send: function( msg, target_id )
 	{
 		//this.server.sendMessage( msg );
-		this.server.sendMessage( msg, spectator_id );
+		this.server.sendMessage( msg, target_id );
 	},
 	
 	

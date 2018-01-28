@@ -1,6 +1,13 @@
 var MENUSTAGE = {
 	name: "menu",
 	selected: 0,
+	
+	options:[
+		"TRAINING",
+		"SPECTATE",
+		"COMPETE",
+		"HOST"
+	],
 
 	onInit: function()
 	{
@@ -20,23 +27,33 @@ var MENUSTAGE = {
 		
 		ctx.globalAlpha = Math.clamp( getTime() * 0.001 - this.start_time, 0,1 ); 
 		ctx.font = "16px pixel";
-		ctx.fillText( "SELECT GAME", 10, y );
+		ctx.fillText( "CHOOSE OPTION", 10, y );
 		y += 30;
+		
+		ctx.fillStyle = "#345";
+		ctx.fillRect( 5, y + this.selected * 24 - 24, 200, 26 );
+
 	
-		for(var i = 0; i < GAMES.games.length; ++i )
+		for(var i = 0; i < this.options.length; ++i )
 		{
-			var game = GAMES.games[i];
-			ctx.fillText( (this.selected == i ? "] " : "") + game.name.toUpperCase(), 20, y );
+			var option = this.options[i];
+			ctx.fillStyle = (this.selected == i ? "white" : "black" );
+			ctx.fillText( (this.selected == i ? "] " : "") + option, 20, y );
 			y += 24;
 		}
 		ctx.globalAlpha = 1; 
 	},
 	
-	selectGame: function( game )
+	selectOption: function( option )
 	{
-		GAMES.launchGame( game );
-		APP.changeStage( PLAYSTAGE );
-		
+		if(option == "TRAINING")
+			APP.changeStage( TRAININGSTAGE );
+		else if(option == "SPECTATE")
+			APP.changeStage( SPECTATORSTAGE );
+		else if(option == "COMPETE")
+			APP.changeStage( CHALLENGESTAGE );
+		else if(option == "HOST")
+			APP.changeStage( TOWERSTAGE );		
 	},
 	
 	onUpdate: function( dt )
@@ -46,14 +63,10 @@ var MENUSTAGE = {
 	
 	onMouse: function( e )
 	{
-		return;
-		
-		var i = Math.floor((e.posy - 20) / 24);
+		var i = Math.clamp( Math.floor((e.mousey/2 - 40) / 24), 0, this.options.length - 1);
 		if( e.type == "mousedown" )
 		{
-			var game = GAMES.games[i];
-			if(game)
-				this.selectGame(game);
+			this.selectOption( this.options[ this.selected ] );
 		}
 		else if( e.type == "mousemove" )
 		{
@@ -65,15 +78,15 @@ var MENUSTAGE = {
 	{
 		if( e.type == "keydown" )
 		{
-			if(e.keyCode == 80 )
+			if(e.keyCode == 80 ) //P
 				APP.changeStage( SPECTATORSTAGE );
 			if(e.keyCode == 38 )
 				this.selected--;
 			if(e.keyCode == 40 )
 				this.selected++;
 			if(e.keyCode == 13 )
-				this.selectGame( GAMES.games[ this.selected ] );
-			this.selected = Math.clamp( this.selected, 0, GAMES.games.length - 1 );
+				this.selectOption( this.options[ this.selected ] );
+			this.selected = Math.clamp( this.selected, 0, this.options.length - 1 );
 		}
 	}
 };

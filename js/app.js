@@ -15,6 +15,8 @@ var APP = {
 		var main = this.main = document.querySelector("#main");
 		var canvas = this.canvas = document.querySelector("canvas");
 		onResize();
+		canvas.width = (main.offsetWidth * 0.5)|0;
+		canvas.height = (main.offsetHeight * 0.5)|0;
 		
 		this.loop = new GameLoop( this.canvas );
 		this.loop.ondraw = this.render.bind(this);
@@ -40,19 +42,13 @@ var APP = {
 			var h = window.screen.height;
 			w = document.body.offsetWidth;
 			h = document.body.offsetHeight;
-			if(main.classList.contains("spectator"))
-			{
-				main.style.left = (((w - main.offsetWidth)/2)|0) + "px";
-				main.style.top = (((h - main.offsetHeight)/2)|0) + "px";
-			}
-			else
-			{
-				main.style.left = (((w - canvas.width*2) / 2)|0) + "px";
-				main.style.top = (((h - canvas.height*2) / 2)|0) + "px";
-			}
+			main.style.left = (((w - main.offsetWidth)/2)|0) + "px";
+			main.style.top = (((h - main.offsetHeight)/2)|0) + "px";
 		}
 		this.onResize = onResize;
 		window.onresize = onResize;
+		
+		window.onbeforeunload = this.onBeforeUnload.bind(this);
 	},
 		
 	render: function()
@@ -63,7 +59,7 @@ var APP = {
 		ctx.fillRect(0,0, this.canvas.width, this.canvas.height );
 
 		if( this.current_stage.onRender )
-			this.current_stage.onRender(canvas);
+			this.current_stage.onRender(canvas,ctx);
 	},
 	
 	update: function(dt)
@@ -82,14 +78,14 @@ var APP = {
 	
 	onKey: function(e)
 	{
-		if(e.keyCode == 79 && e.type == "keydown")
-		{
-			this.toggleSpectatorMode();
-			return;
-		}
-	
 		if( this.current_stage.onKey )
 			this.current_stage.onKey(e);
+	},
+	
+	onBeforeUnload: function()
+	{
+		if( this.current_stage.onBeforeUnload )
+			this.current_stage.onBeforeUnload();
 	},
 	
 	registerStage: function( stage )

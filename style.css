@@ -19,7 +19,7 @@ html, body {
 	position: absolute;
 }
 
-#main.spectator {
+#main.spectator, #main.desktop {
 	width: 800px;
 	height: 600px;
 	background-color: black;

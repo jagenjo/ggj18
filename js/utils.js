@@ -35,5 +35,12 @@ CanvasRenderingContext2D.prototype.drawSprite = function( img, x,y, num, size )
 	this.drawImage( img, ix * size, iy * size, size, size, x,y, size, size ); 
 }
 
+Object.defineProperty( Array.prototype, "random", {
+	value: function(){
+		return this[ (Math.random() * this.length)|0 ];
+	},
+	enumerable: false
+});
+
 
 var DEG2RAD = 0.0174533;

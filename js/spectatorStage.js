@@ -186,6 +186,7 @@ var SPECTATORSTAGE = {
 		{
 			switch( e.keyCode )
 			{
+				case 27: APP.changeStage(MENUSTAGE); return; break;
 				case 32: this.nextClient(); return; break;
 				default:
 			}
