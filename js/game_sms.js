@@ -97,7 +97,7 @@ var GameSMS = {
 		ctx.fillRect(70,0,110,70);
 		ctx.fillStyle = "#2b240f";
 		ctx.font = "8px pixel";
-		ctx.fillText((this.state.res + this.state.resl).toUpperCase(), 90,20);
+		ctx.fillText((this.state.res + this.state.resl).toUpperCase(), 90,30);
 
 		ctx.fillStyle = "white";
 		ctx.drawImage(APP.assets["data/sms/nokia2.png"],0,0);
