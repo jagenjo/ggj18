@@ -99,6 +99,10 @@ var CHALLENGESTAGE = {
 		{
 			this.onMatchPlay( data );
 		}
+		else if( data.type == "match_finished" )
+		{
+			this.onMatchFinished( data );
+		}
 		else if( data.type == "match_canceled" )
 		{
 			APP.changeStage( MENUSTAGE );
@@ -127,6 +131,14 @@ var CHALLENGESTAGE = {
 		PLAYSTAGE.onGameCompleted = this.onGameCompleted.bind(this);
 		this.inside_game = true;
 		APP.changeStage( PLAYSTAGE );
+	},
+	
+	onMatchFinished: function(data)
+	{
+		this.game_state = 2;
+		this.inside_game = NETWORK.id == data.winner_id;
+		APP.changeStage( CHALLENGESTAGE );
+		this.inside_game = false;
 	},
 	
 	onGameCompleted: function( score )

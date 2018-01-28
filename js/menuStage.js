@@ -4,7 +4,7 @@ var MENUSTAGE = {
 	
 	options:[
 		"TRAINING",
-		"SPECTATE",
+//		"SPECTATE",
 		"COMPETE",
 		"HOST"
 	],

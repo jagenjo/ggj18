@@ -97,7 +97,12 @@ var APP = {
 	{
 		if(stage.constructor === String)
 			stage = this.stages[ stage ];
-			
+	
+		//no changes		
+		if(this.current_stage == stage)
+			return;
+
+		//leave previous			
 		if(this.current_stage)
 		{
 			this.current_stage.active = false;

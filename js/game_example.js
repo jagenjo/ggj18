@@ -5,7 +5,7 @@ var GameExample = {
 	name: "waves",
 	version: 0.2,
 	
-	scale: 5,
+	scale: 2,
 	to_load: ["data/waves/caustics.png"], //urls of images and sounds to load
 	
 	//ALL GAME STATE SHOULD BE HERE, DO NOT STORE WEIRD STUFF LIKE IMAGES, DOM, ETC
@@ -16,7 +16,8 @@ var GameExample = {
 		mousedown_was_pressed: false,
 		blips: [],
 		win_time: -1,
-		volume: 0.0
+		volume: 0.0,
+		total: 4
 	},
 
 	//called after loading all games, init stuff here
@@ -86,6 +87,7 @@ var GameExample = {
 		
 		if(this.state.win_time > 0 )
 		{
+			ctx.font = "16px pixel";
 			ctx.textAlign = "center";
 			ctx.fillStyle = "gray";
 			ctx.fillText( "WINNER!!", canvas.width * 0.5 + Math.random()*2-1, canvas.height * 0.5 + Math.random()*2-1 );
@@ -95,9 +97,10 @@ var GameExample = {
 		} 
 		else
 		{
+			ctx.font = "8px pixel";
 			ctx.textAlign = "center";
 			ctx.fillStyle = "#AEF";
-			ctx.fillText( "CLICK!", canvas.width * 0.5, canvas.height * 0.25 );
+			ctx.fillText( "CLICK " + (this.state.total - this.state.blips.length + 1) + " TIMES", canvas.width * 0.5, canvas.height * 0.25 );
 		}
 		
 	},
@@ -117,7 +120,7 @@ var GameExample = {
 		if(e.type == "mousedown" )
 		{
 			this.state.blips.push( { x: e.posx, y: e.posy, time: this.state.time } );
-			if( this.state.win_time == -1 && this.state.blips.length > 4 )
+			if( this.state.win_time == -1 && this.state.blips.length > this.state.total )
 				this.state.win_time = this.state.time;
 			GAMES.playSound("data/sounds/water.wav",0.5);
 		}

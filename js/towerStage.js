@@ -6,6 +6,7 @@ var TOWERSTAGE = {
 	game_canvas: null,
 	
 	spectating_author: -1,
+	
 	state: 0, //waiting
 	state_time: 0,
 	winner_id: -1,
@@ -43,6 +44,7 @@ var TOWERSTAGE = {
 		NETWORK.requestSpectator();
 		NETWORK.listening_stage = this;
 		
+		this.state = 0;
 		this.players.length = 0;
 		this.players_by_id = {};
 		this.winner_id = -1;
@@ -76,28 +78,28 @@ var TOWERSTAGE = {
 		ctx.fillStyle = "white";
 		ctx.font = "16px pixel";
 		
-		if( this.zoom_tv )
+		if( !this.zoom_tv )
 		{
-			return;
-		}
-
-		if(this.state == 0)
-		{
-			var msg = "Waiting players... ";
-			if( this.players.length > 0 )
-				msg = "Players online: " + this.players.length;
-			ctx.fillText( msg , 40, this.screen.y + this.screen.height + 70 );	
+			if(this.state == 0)
+			{
+				var msg = "Waiting players... ";
+				if( this.players.length > 0 )
+					msg = "Players online: " + this.players.length;
+				ctx.fillText( msg , 40, this.screen.y + this.screen.height + 70 );	
 			
-			if( this.players.length > 0 )
-				ctx.fillText( "press SPACE to start" , 40, this.screen.y + this.screen.height + 100 );	
+				if( this.players.length > 0 )
+					ctx.fillText( "press SPACE to start" , 40, this.screen.y + this.screen.height + 100 );	
+			}
+			else if(this.state == 1)
+			{
+				ctx.fillText( "PLAYING" , 40, this.screen.y + this.screen.height + 70 );	
+			}
 		}
-		else if(this.state == 1)
-		{
-			ctx.fillText( "PLAYING" , 40, this.screen.y + this.screen.height + 70 );	
-		}
-		else if(this.state == 2)
+		
+		if(this.state == 2)
 		{
 			ctx.fillStyle = "black";
+			ctx.font = "32px pixel";
 			ctx.fillRect( 0, canvas.height * 0.5 - 100, canvas.width, 200 );
 			ctx.textAlign = "center";
 			ctx.fillStyle = "white";
@@ -183,6 +185,9 @@ var TOWERSTAGE = {
 	
 	onSpectatingMessage: function( author_id, data )
 	{
+		if(!this.players.length)
+			return;
+	
 		if( data.type == "game_event")
 		{
 			if( data.action == "play_sound" )
@@ -252,6 +257,7 @@ var TOWERSTAGE = {
 	{
 		this.state = 2;
 		this.winner_id = author_id;
+		this.broadcast({ type:"match_finished", winner_id: author_id });
 	},
 	
 	onBeforeUnload: function()
@@ -287,7 +293,7 @@ var TOWERSTAGE = {
 	{
 		if( this.spectating_author == author_id )
 		{
-			this.spectating_author = -1;
+			//this.spectating_author = -1;
 			if(this.game && this.game.onLeave)
 				this.game.onLeave();
 			this.game = null;
@@ -310,7 +316,7 @@ var TOWERSTAGE = {
 			return;
 		}
 		
-		var user = this.players[ this.spectating_author ];
+		var user = this.players_by_id[ this.spectating_author ];
 		if(!user)
 			return;
 			
@@ -327,6 +333,8 @@ var TOWERSTAGE = {
 			else
 				this.game = null;
 		}
+		else if( user )
+			this.spectating_author = user.id;
 		else
 			this.spectating_author = -1;
 	},
@@ -343,7 +351,10 @@ var TOWERSTAGE = {
 		{
 			switch( e.keyCode )
 			{
-				case 78: this.onPlayerWon( this.players.length ? this.players[0].id : 1 ); return; break;
+				case 78: 
+					//this.onPlayerWon( this.players.length ? this.players[0].id : 1 );
+					this.onPlayerWon( 1 );
+					return; break;
 				case 27: APP.changeStage( MENUSTAGE ); return; break;
 				case 32:
 					if( this.state == 0 )
