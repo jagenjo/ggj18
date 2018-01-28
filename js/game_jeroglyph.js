@@ -23,6 +23,8 @@ var GameJeroglyph = {
 		sequence: "",
 		sequenceProgress: 0,
 		fail: -1,
+		last_pressed: 0,
+		last_pressed_time: -1
 	},
 
 	//called after loading all games, init stuff here
@@ -142,6 +144,8 @@ var GameJeroglyph = {
 			}
 
 			if(g){
+				this.state.last_pressed = g;
+				this.state.last_pressed_time = this.state.time;
 				if(this.state.sequence[this.state.sequenceProgress] == g){
 					this.state.sequenceProgress += 1;
 					if(this.state.sequenceProgress == this.state.sequence.length){

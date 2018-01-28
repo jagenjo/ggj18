@@ -12,6 +12,7 @@ var TOWERSTAGE = {
 	winner_id: -1,
 	
 	zoom_tv: false,
+	tower_scroll: 0,
 	
 	players: [],
 	players_by_id: {},
@@ -49,6 +50,7 @@ var TOWERSTAGE = {
 		this.players_by_id = {};
 		this.winner_id = -1;
 		this.zoom_tv = false;
+		this.tower_scroll = 0;
 		
 		if(this.game && this.game.onEnter)
 			this.game.onEnter();
@@ -68,7 +70,7 @@ var TOWERSTAGE = {
 		//var ctx = canvas.getContext("2d");
 		
 		ctx.drawImage( APP.assets[ "data/background_skyline.png" ], 0, 0 );
-		ctx.drawImage( APP.assets[ "data/tower/background_tower.png" ], 0, -600 );
+		ctx.drawImage( APP.assets[ "data/tower/background_tower.png" ], 0, -600 + this.tower_scroll );
 		
 		this.renderPlayers(ctx);
 		
@@ -130,7 +132,7 @@ var TOWERSTAGE = {
 			var player = this.players[i];
 			var index = player.id % 8;
 			var posx = 600 + i * 40;
-			var posy = 600 - 48;
+			var posy = 600 - 48 + this.tower_scroll;
 			//var level = ((getTime()*0.001)|0)%5;
 			var level = player.level;
 			posy -= this.level_heights[ level ];
@@ -178,13 +180,19 @@ var TOWERSTAGE = {
 	
 	onUpdate: function( dt )
 	{
-		//if local
-		if(!this.game)
-			return;
-			
-		this.game.state.time += dt;
-		if( this.game.onUpdate )
-			this.game.onUpdate(dt);
+		if(this.game)
+		{
+			this.game.state.time += dt;
+			if( this.game.onUpdate )
+				this.game.onUpdate(dt);
+		}
+		
+		if( APP.loop.keys["UP"] )
+			this.tower_scroll += dt * 100;
+		if( APP.loop.keys["DOWN"] )
+			this.tower_scroll -= dt * 100;
+		if( this.tower_scroll < 0 )
+			this.tower_scroll = 0;
 	},
 	
 	onServerMessage: function(author_id, data)

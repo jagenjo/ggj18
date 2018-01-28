@@ -162,7 +162,10 @@ var GameRadio = {
 			this.state.solved = Math.max(0, this.state.solved - dt*0.5);
 
 		if( this.state.win_time == -1 && this.state.solved > 1.0 )
+		{
 			this.state.win_time = this.state.time;
+			GAMES.playSound("data/win1.wav", 0.5);
+		}
 	
 		if( this.state.win_time != -1 && ( this.state.win_time + 2 ) < this.state.time && this.state.time > 2)
 			GAMES.playerWin();

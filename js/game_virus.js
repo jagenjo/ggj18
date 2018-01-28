@@ -139,6 +139,7 @@ var GameVirus = {
 		}else if(this.state.fail < 0 && this.state.win_time < 0){
 			if(this.state.found >= 1){
 				this.state.win_time = this.state.time;
+				GAMES.playSound("data/win1.wav", 0.5);
 			}else{
 				var dx = Math.abs(this.state.microscopex + this.state.virusx);
 				var dy = Math.abs(this.state.microscopey + this.state.virusy);

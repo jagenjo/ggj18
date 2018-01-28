@@ -86,7 +86,10 @@ var GameJelly = {
 		if( this.state.distance > 80) //win
 		{
 			if( this.state.win_time == -1 )
+			{
 				 this.state.win_time = this.state.time;
+				GAMES.playSound("data/win1.wav", 0.5);
+			}
 		}
 		else if( this.state.dead == -1 && this.state.distance < 30) //kill
 		{

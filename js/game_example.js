@@ -121,7 +121,10 @@ var GameExample = {
 		{
 			this.state.blips.push( { x: e.posx, y: e.posy, time: this.state.time } );
 			if( this.state.win_time == -1 && this.state.blips.length > this.state.total )
+			{
 				this.state.win_time = this.state.time;
+				GAMES.playSound("data/win1.wav", 0.5);
+			}
 			GAMES.playSound("data/sounds/water.wav",0.5);
 		}
 	}
