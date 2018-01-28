@@ -1,7 +1,7 @@
 var TOWERSTAGE = {
 	name: "tower",
 
-	to_load: ["data/background_skyline.png", "data/tower/tv.png", "data/tower/background_tower.png" ],
+	to_load: ["data/background_skyline.png", "data/tower/tv.png", "data/tower/background_tower.png", "data/tower/ninots2.png" ],
 	game: null,
 	game_canvas: null,
 	
@@ -48,6 +48,7 @@ var TOWERSTAGE = {
 		this.players.length = 0;
 		this.players_by_id = {};
 		this.winner_id = -1;
+		this.zoom_tv = false;
 		
 		if(this.game && this.game.onEnter)
 			this.game.onEnter();
@@ -69,6 +70,8 @@ var TOWERSTAGE = {
 		ctx.drawImage( APP.assets[ "data/background_skyline.png" ], 0, 0 );
 		ctx.drawImage( APP.assets[ "data/tower/background_tower.png" ], 0, -600 );
 		
+		this.renderPlayers(ctx);
+		
 		ctx.save();
 		if( this.zoom_tv )
 			ctx.scale(2,2);
@@ -78,6 +81,7 @@ var TOWERSTAGE = {
 		ctx.fillStyle = "white";
 		ctx.font = "16px pixel";
 		
+		//msgs
 		if( !this.zoom_tv )
 		{
 			if(this.state == 0)
@@ -95,7 +99,8 @@ var TOWERSTAGE = {
 				ctx.fillText( "PLAYING" , 40, this.screen.y + this.screen.height + 70 );	
 			}
 		}
-		
+
+		//ending		
 		if(this.state == 2)
 		{
 			ctx.fillStyle = "black";
@@ -111,6 +116,32 @@ var TOWERSTAGE = {
 		ctx.fillStyle = "white";
 		ctx.font = "8px pixel";
 		//ctx.fillText(" spectating " + this.spectating_author + "["+NETWORK.users.length+"]", 0,10 );	
+	},
+
+	level_heights: [ 7, 113, 228, 347,453, 560, 676, 676, 676, 676, 676	],
+	
+	renderPlayers: function(ctx)
+	{
+		ctx.fillStyle = "white";
+		
+		for(var i = 0; i < this.players.length; ++i)
+		//for(var i = 0; i < 4; ++i)
+		{
+			var player = this.players[i];
+			var index = player.id % 8;
+			var posx = 600 + i * 40;
+			var posy = 600 - 48;
+			//var level = ((getTime()*0.001)|0)%5;
+			var level = player.level;
+			posy -= this.level_heights[ level ];
+			player.posx = posx;
+			player.posy = posy;
+			if( this.state == 1 )
+				posx += Math.random()*2;
+			ctx.drawImage( APP.assets["data/tower/ninots2.png"], 16*index, 0, 16, 48, posx, posy, 16, 48 );
+			if( player.id == this.spectating_author )
+				ctx.fillRect( player.posx, player.posy +48, 16, 4 );
+		}
 	},
 	
 	renderTV: function(ctx)
@@ -134,7 +165,13 @@ var TOWERSTAGE = {
 			var game_canvas = GAMES.renderGame( this.game, this.game_screen );
 			ctx.imageSmoothingEnabled = false;
 			ctx.drawImage( game_canvas, this.screen.x, this.screen.y, this.screen.width, this.screen.height );
+			
+			ctx.fillStyle = "#AFA";
+			ctx.font = "16px pixel";
+			ctx.fillText( this.spectating_author.toString(), 50, 60 );
+			
 		}
+		
 		
 		ctx.drawImage( APP.assets[ "data/tower/tv.png" ], 0,0);
 	},

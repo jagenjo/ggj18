@@ -53,7 +53,9 @@ var MENUSTAGE = {
 		else if(option == "COMPETE")
 			APP.changeStage( CHALLENGESTAGE );
 		else if(option == "HOST")
-			APP.changeStage( TOWERSTAGE );		
+		{
+			//APP.changeStage( TOWERSTAGE );		
+		}
 	},
 	
 	onUpdate: function( dt )
@@ -63,6 +65,9 @@ var MENUSTAGE = {
 	
 	onMouse: function( e )
 	{
+		if( (this.start_time + 0.5) > getTime()*0.001 )	
+			return;
+	
 		var i = Math.clamp( Math.floor((e.mousey/2 - 40) / 24), 0, this.options.length - 1);
 		if( e.type == "mousedown" )
 		{
@@ -78,6 +83,8 @@ var MENUSTAGE = {
 	{
 		if( e.type == "keydown" )
 		{
+			if(e.keyCode == 72 ) //H
+				APP.changeStage( TOWERSTAGE );
 			if(e.keyCode == 80 ) //P
 				APP.changeStage( SPECTATORSTAGE );
 			if(e.keyCode == 38 )

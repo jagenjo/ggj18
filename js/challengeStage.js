@@ -48,7 +48,11 @@ var CHALLENGESTAGE = {
 	{
 		var ctx = canvas.getContext("2d");
 		
-		ctx.fillStyle = "#2F4";
+		if(this.game_state == 2 && !this.winner )
+			ctx.fillStyle = "#F42";
+		else
+			ctx.fillStyle = "#2F4";
+			
 		ctx.fillRect(0,0,canvas.width,canvas.height);
 		
 		//msg
@@ -60,7 +64,7 @@ var CHALLENGESTAGE = {
 			if( this.winner )
 				msg = "YOU WON!!";
 			else
-				msg = "MATCH ENDED";
+				msg = "PLAYER " + this.winner_id + " WON";
 		}
 			
 		ctx.fillStyle = "white";
@@ -136,7 +140,9 @@ var CHALLENGESTAGE = {
 	onMatchFinished: function(data)
 	{
 		this.game_state = 2;
-		this.inside_game = NETWORK.id == data.winner_id;
+		this.inside_game = 
+		this.winner = NETWORK.id == data.winner_id;
+		this.winner_id = data.winner_id;
 		APP.changeStage( CHALLENGESTAGE );
 		this.inside_game = false;
 	},

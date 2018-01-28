@@ -94,7 +94,7 @@ var NETWORK = {
 			
 			
 		
-		if( this.listening_stage && this.listening_stage.active && this.listening_stage.onServerMessage )
+		if( this.listening_stage && this.listening_stage.onServerMessage )
 			this.listening_stage.onServerMessage( author_id, data );
 	},
 
