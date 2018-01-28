@@ -8,6 +8,8 @@ var GameJeroglyph = {
 	to_load: ["data/jeroglyph/blackboard.png", "data/jeroglyph/buttons.png", "data/jeroglyph/teacher_1.png", "data/jeroglyph/teacher_2.png", "data/jeroglyph/teacher_3.png", "data/jeroglyph/teacher_4.png", "data/jeroglyph/circle.png", "data/jeroglyph/rombo.png", "data/jeroglyph/square.png", "data/jeroglyph/triangle.png"], //urls of images and sounds to load
 	teacher: ["data/jeroglyph/teacher_1.png", "data/jeroglyph/teacher_2.png", "data/jeroglyph/teacher_3.png", "data/jeroglyph/teacher_4.png"],
 	glyphs: ["data/jeroglyph/circle.png", "data/jeroglyph/rombo.png", "data/jeroglyph/square.png", "data/jeroglyph/triangle.png"],
+	sequencelength: 4,
+	sequencetime: 4,
 
 	//ALL GAME STATE SHOULD BE HERE, DO NOT STORE WEIRD STUFF LIKE IMAGES, DOM, ETC
 	//GAME STATE IS SENT TO SERVER EVERY FRAME so keep it light
@@ -37,7 +39,7 @@ var GameJeroglyph = {
 
 	sequence: function(){
 		var s = "";
-		for(var i=0; i<5; i++){
+		for(var i=0; i<this.sequencelength; i++){
 			var r = Math.floor(Math.random()*4);
 			s += (r == 0 ? "c" : r == 1 ? "r" : r == 2 ? "s" : "t");
 		}
@@ -108,7 +110,7 @@ var GameJeroglyph = {
 	onUpdate: function( dt )
 	{
 		if(this.state.show_teaching >= 0){
-			this.state.show_teaching += 0.2*dt;
+			this.state.show_teaching += (1/this.sequencetime)*dt;
 			if(this.state.show_teaching > 1) this.state.show_teaching = -1;
 		}
 
