@@ -22,6 +22,7 @@ var GameJeroglyph = {
 		show_teaching: 0,
 		sequence: "",
 		sequenceProgress: 0,
+		fail: -1,
 	},
 
 	//called after loading all games, init stuff here
@@ -51,6 +52,7 @@ var GameJeroglyph = {
 		this.state.win_time = -1;
 		this.sequence();
 		this.state.show_teaching = 0;
+		this.state.fail = -1;
 
 	},
 
@@ -71,7 +73,7 @@ var GameJeroglyph = {
 		var w = canvas.width;
 		var h = canvas.height;
 
-		ctx.fillStyle = "#676767";
+		ctx.fillStyle = this.state.fail > 0 ? "red" : "#676767";
 		ctx.fillRect(0,0,w,h);
 
 		ctx.fillStyle = "white";
@@ -109,6 +111,11 @@ var GameJeroglyph = {
 	//ONLY USE INPUT_STATE TO COMPUTE NEW GAME_STATE
 	onUpdate: function( dt )
 	{
+		if(this.state.fail >= 0){
+			this.state.fail += dt;
+			if(this.state.fail > 0.3) this.restart();
+		}
+
 		if(this.state.show_teaching >= 0){
 			this.state.show_teaching += (1/this.sequencetime)*dt;
 			if(this.state.show_teaching > 1) this.state.show_teaching = -1;
@@ -122,7 +129,7 @@ var GameJeroglyph = {
 	
 	onMouse: function( e )
 	{
-		if(e.type == "mousedown" && this.state.win_time < 0 && this.state.show_teaching < 0){
+		if(e.type == "mousedown" && this.state.win_time < 0 && this.state.show_teaching < 0 && this.state.fail < 0){
 			var g;
 			if(e.posx > 12 && e.posx < 56 && e.posy > 32 && e.posy < 68){
 				g = "c";
@@ -143,7 +150,7 @@ var GameJeroglyph = {
 						GAMES.playSound("data/win1.wav", 0.5);
 					}
 				}else{
-					this.restart();
+					this.state.fail = 0;
 				}
 			}
 		}
